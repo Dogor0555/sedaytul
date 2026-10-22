@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sedaytul
+      POSTGRES_USER: sedaytul
+      POSTGRES_PASSWORD: local-development-only
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - sedaytul-dev-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sedaytul -d sedaytul"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  sedaytul-dev-db:

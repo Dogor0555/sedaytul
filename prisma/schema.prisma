@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  HIDDEN
+}
+
+enum Availability {
+  AVAILABLE
+  MADE_TO_ORDER
+  UNAVAILABLE
+}
+
+enum ContactEventType {
+  WHATSAPP_CLICK
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         UserRole      @default(EDITOR)
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activityLogs ActivityLog[]
+
+  @@index([active])
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  description  String?
+  coverImageId String?
+  sortOrder    Int           @default(0)
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  coverImage   Media?        @relation("CategoryCover", fields: [coverImageId], references: [id], onDelete: SetNull)
+  products     Product[]
+  galleryItems GalleryItem[]
+
+  @@index([active, sortOrder])
+  @@index([coverImageId])
+}
+
+model Product {
+  id               String         @id @default(cuid())
+  categoryId       String
+  name             String
+  slug             String         @unique
+  referenceCode    String?        @unique
+  shortDescription String?
+  description      String?
+  price            Decimal?       @db.Decimal(12, 2)
+  showPrice        Boolean        @default(false)
+  availability     Availability   @default(AVAILABLE)
+  status           ProductStatus  @default(DRAFT)
+  featured         Boolean        @default(false)
+  sortOrder        Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  category         Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  media            ProductMedia[]
+  contactEvents    ContactEvent[]
+
+  @@index([categoryId, status, sortOrder])
+  @@index([featured, status])
+}
+
+model Media {
+  id              String         @id @default(cuid())
+  storageKey      String         @unique
+  url             String
+  mimeType        String
+  size            Int
+  width           Int?
+  height          Int?
+  altText         String?
+  createdAt       DateTime       @default(now())
+  productMedia    ProductMedia[]
+  categoryCovers  Category[]     @relation("CategoryCover")
+  galleryItems    GalleryItem[]
+  settingsLogos   SiteSettings[] @relation("SettingsLogo")
+  settingsSharing SiteSettings[] @relation("SettingsSharing")
+  pageContents    PageContent[]
+}
+
+model ProductMedia {
+  id        String  @id @default(cuid())
+  productId String
+  mediaId   String
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, mediaId])
+  @@index([productId, sortOrder])
+  @@index([mediaId])
+}
+
+model GalleryItem {
+  id         String    @id @default(cuid())
+  mediaId    String
+  categoryId String?
+  title      String?
+  visible    Boolean   @default(true)
+  featured   Boolean   @default(false)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  media      Media     @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([visible, sortOrder])
+  @@index([categoryId])
+}
+
+model SiteSettings {
+  id                  String   @id @default("main")
+  businessName        String   @default("Seda y Tul")
+  logoMediaId         String?
+  whatsappNumber      String?
+  facebookUrl         String?
+  instagramUrl        String?
+  address             String?
+  businessHours       String?
+  businessDescription String?
+  footerText          String?
+  shareMediaId        String?
+  seoTitle            String?
+  seoDescription      String?
+  updatedAt           DateTime @updatedAt
+  logo                Media?   @relation("SettingsLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  shareImage          Media?   @relation("SettingsSharing", fields: [shareMediaId], references: [id], onDelete: SetNull)
+
+  @@index([logoMediaId])
+  @@index([shareMediaId])
+}
+
+model PageContent {
+  id         String   @id @default(cuid())
+  pageKey    String
+  sectionKey String
+  title      String?
+  subtitle   String?
+  body       String?
+  mediaId    String?
+  visible    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+  media      Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+
+  @@unique([pageKey, sectionKey])
+  @@index([pageKey, visible, sortOrder])
+  @@index([mediaId])
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
+
+model ContactEvent {
+  id         String           @id @default(cuid())
+  productId  String?
+  sourcePage String
+  eventType  ContactEventType @default(WHATSAPP_CLICK)
+  createdAt  DateTime         @default(now())
+  product    Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([productId, createdAt])
+}
