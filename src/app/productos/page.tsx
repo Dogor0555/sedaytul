@@ -4,6 +4,8 @@ import { PageIntro, ProductCard } from "@/components/public/content";
 import { PublicShell } from "@/components/public/site-chrome";
 import { getPublicCategories, getPublicProducts } from "@/server/repositories/public-catalog";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = { title: "Accesorios | Seda y Tul", description: "Peinetas, tocados, diademas, coronas y lazos artesanales en El Salvador." };
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ categoria?: string }> }) {

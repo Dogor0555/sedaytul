@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 
 export async function login(formData: FormData) {
@@ -11,7 +12,9 @@ export async function login(formData: FormData) {
       redirectTo: "/admin",
     });
   } catch (error) {
-    if (error instanceof AuthError) return;
+    if (error instanceof AuthError) {
+      redirect("/admin/iniciar-sesion?error=credenciales");
+    }
     throw error;
   }
 }

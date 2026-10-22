@@ -20,13 +20,18 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-const navigation: { label: string; href: string; icon: LucideIcon }[] = [
+const navigation: {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  adminOnly?: boolean;
+}[] = [
   { label: "Resumen", href: "/admin", icon: LayoutDashboard },
   { label: "Productos", href: "/admin/productos", icon: Package },
   { label: "Categorías", href: "/admin/categorias", icon: FolderTree },
   { label: "Galería", href: "/admin/galeria", icon: ImageIcon },
   { label: "Contenido", href: "/admin/contenido", icon: FileText },
-  { label: "Usuarios", href: "/admin/usuarios", icon: Users },
+  { label: "Usuarios", href: "/admin/usuarios", icon: Users, adminOnly: true },
   { label: "Configuración", href: "/admin/configuracion", icon: Settings },
 ];
 
@@ -53,10 +58,10 @@ function Brand() {
   );
 }
 
-function Navigation({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function Navigation({ pathname, role, onNavigate }: { pathname: string; role: "ADMIN" | "EDITOR"; onNavigate?: () => void }) {
   return (
     <nav className="space-y-1" aria-label="Navegación administrativa">
-      {navigation.map(({ label, href, icon: Icon }) => {
+      {navigation.filter((item) => !item.adminOnly || role === "ADMIN").map(({ label, href, icon: Icon }) => {
         const active = href === "/admin" ? pathname === href : pathname.startsWith(href);
         return (
           <Link
@@ -87,7 +92,7 @@ export function AdminShell({ children, user, onLogout }: { children: React.React
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] border-r border-[#e5ddd8] bg-[#fdfbf9] px-5 py-6 lg:flex lg:flex-col">
         <Brand />
         <div className="my-7 h-px bg-[#eee7e3]" />
-        <Navigation pathname={pathname} />
+        <Navigation pathname={pathname} role={user.role} />
         <div className="mt-auto rounded-2xl border border-[#eadfd8] bg-[#faf3ee] p-3.5">
           <div className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-full bg-[#9a6b68] text-xs font-bold text-white">{initials}</span>
@@ -103,7 +108,7 @@ export function AdminShell({ children, user, onLogout }: { children: React.React
           <aside className="absolute inset-y-0 left-0 flex w-[min(82vw,320px)] flex-col bg-[#fdfbf9] p-5 shadow-2xl">
             <div className="flex items-center justify-between"><Brand /><button onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center rounded-xl border border-[#e5ddd8]" aria-label="Cerrar menú"><X className="size-5" /></button></div>
             <div className="my-6 h-px bg-[#eee7e3]" />
-            <Navigation pathname={pathname} onNavigate={() => setMenuOpen(false)} />
+            <Navigation pathname={pathname} role={user.role} onNavigate={() => setMenuOpen(false)} />
             <form action={onLogout} className="mt-auto"><button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#716562]"><LogOut className="size-[18px]" />Cerrar sesión</button></form>
           </aside>
         </div>

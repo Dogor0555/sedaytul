@@ -10,7 +10,7 @@ const availabilityLabel = { AVAILABLE: "Disponible", MADE_TO_ORDER: "Por encargo
 export default async function ProductsPage() {
   const [products, categories] = await Promise.all([
     db.product.findMany({ include: { category: true }, orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }] }),
-    db.category.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" }, select: { name: true } }),
+    db.category.findMany({ orderBy: { sortOrder: "asc" }, select: { name: true } }),
   ]);
   return <div className="space-y-7">
     <PageHeader eyebrow="Catálogo" title="Productos" description="Administra accesorios artesanales, disponibilidad, encargos y visibilidad del catálogo." actions={<Link href="/admin/productos/nuevo" className={primaryButton}><Plus className="size-4" />Nuevo producto</Link>} />

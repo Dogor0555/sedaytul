@@ -14,7 +14,7 @@ export function ProductCard({ product }: { product: Product }) {
         <img src={product.image} alt={`${product.kind} ${product.name}`} className="aspect-[3/4] h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
       </Link>
       <div className="flex items-start justify-between gap-4 border-b border-[#C7AD8C]/45 py-5">
-        <div><p className="text-[9px] uppercase tracking-[0.3em] text-[#857268]">{product.kind} · {product.category}</p><h2 className="mt-1 text-2xl">{product.name}</h2></div>
+        <div><p className="text-[9px] uppercase tracking-[0.3em] text-[#857268]">{product.kind} · {product.category}</p><h2 className="mt-1 text-2xl">{product.name}</h2>{product.price ? <p className="mt-1 font-sans text-xs font-semibold text-[#857268]">{product.price}</p> : null}</div>
         <Link href={`/productos/${product.slug}`} aria-label={`Ver ${product.kind.toLowerCase()} ${product.name}`} className="mt-2 transition-transform group-hover:translate-x-1"><ArrowRight size={18} /></Link>
       </div>
     </article>

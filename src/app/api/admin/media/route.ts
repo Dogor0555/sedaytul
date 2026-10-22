@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
   for (const file of files) {
     if (!allowedTypes.has(file.type) || file.size > maxFileSize) {
-      return Response.json({ error: `${file.name}: formato no permitido o archivo mayor de 8 MB.` }, { status: 400 });
+      return Response.json({ error: `${file.name}: formato no permitido o archivo mayor de 4 MB.` }, { status: 400 });
     }
 
     const source = Buffer.from(await file.arrayBuffer());

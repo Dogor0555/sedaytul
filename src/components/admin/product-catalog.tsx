@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
-import { Grid2X2, List, MoreHorizontal, Search, SlidersHorizontal } from "lucide-react";
+import { Grid2X2, List, Pencil, Search, SlidersHorizontal, Trash2 } from "lucide-react";
+import { deleteProduct } from "@/app/admin/(protected)/actions";
 import { Panel, ProductVisual, StatusBadge, inputClass } from "./admin-ui";
 
 type CatalogProduct = {
@@ -17,6 +18,17 @@ type CatalogProduct = {
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-SV", { style: "currency", currency: "USD" }).format(value);
+
+function ProductActions({ product }: { product: CatalogProduct }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Link href={`/admin/productos/${product.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#ded5d0] bg-white px-2.5 text-xs font-semibold text-[#594946] hover:bg-[#faf6f4]"><Pencil className="size-3.5" />Editar</Link>
+      <form action={deleteProduct.bind(null, product.id)} onSubmit={(event) => { if (!window.confirm(`¿Eliminar “${product.name}”? Esta acción no se puede deshacer.`)) event.preventDefault(); }}>
+        <button type="submit" className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-red-700 hover:bg-red-50"><Trash2 className="size-3.5" />Eliminar</button>
+      </form>
+    </div>
+  );
+}
 
 export function ProductCatalog({ products, categories }: { products: CatalogProduct[]; categories: string[] }) {
   const [query, setQuery] = useState("");
@@ -50,17 +62,22 @@ export function ProductCatalog({ products, categories }: { products: CatalogProd
       </div>
 
       {view === "list" ? (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left">
-            <thead className="bg-[#fbf9f7] text-[10px] font-bold uppercase tracking-[0.14em] text-[#948681]"><tr><th className="px-5 py-3.5">Producto</th><th className="px-4 py-3.5">Categoría</th><th className="px-4 py-3.5">Estado</th><th className="px-4 py-3.5">Disponibilidad</th><th className="px-4 py-3.5 text-right">Precio público</th><th className="w-14"><span className="sr-only">Acciones</span></th></tr></thead>
+        <>
+          <div className="divide-y divide-[#f0ebe8] sm:hidden">
+            {filtered.map((product, index) => <article key={product.id} className="p-4"><div className="flex gap-3"><ProductVisual color={index % 2 ? "#c7ad8c" : "#d5b6ae"} accent="#f5ebe6" className="size-14 shrink-0 rounded-xl" /><div className="min-w-0 flex-1"><Link href={`/admin/productos/${product.id}`} className="font-semibold text-[#493b38] hover:text-[#946762]">{product.name}</Link><p className="mt-1 text-xs text-[#948681]">{product.category} · {product.availability}</p><div className="mt-2"><StatusBadge status={product.status} /></div></div></div><div className="mt-3 flex items-center justify-between gap-3"><span className="text-xs font-semibold text-[#887b77]">{product.showPrice && product.price !== null ? formatCurrency(product.price) : "Precio oculto"}</span><ProductActions product={product} /></div></article>)}
+          </div>
+          <div className="hidden overflow-x-auto sm:block">
+          <table className="w-full min-w-[900px] text-left">
+            <thead className="bg-[#fbf9f7] text-[10px] font-bold uppercase tracking-[0.14em] text-[#948681]"><tr><th className="px-5 py-3.5">Producto</th><th className="px-4 py-3.5">Categoría</th><th className="px-4 py-3.5">Estado</th><th className="px-4 py-3.5">Disponibilidad</th><th className="px-4 py-3.5 text-right">Precio público</th><th className="px-4 py-3.5">Acciones</th></tr></thead>
             <tbody className="divide-y divide-[#f0ebe8]">
-              {filtered.map((product, index) => <tr key={product.id} className="transition hover:bg-[#fdfaf8]"><td className="px-5 py-3"><div className="flex items-center gap-3"><ProductVisual color={index % 2 ? "#c7ad8c" : "#d5b6ae"} accent="#f5ebe6" className="size-12 rounded-xl" /><div><Link href="#" className="text-sm font-semibold text-[#493b38] hover:text-[#946762]">{product.name}</Link><p className="mt-0.5 text-[11px] text-[#9a8d88]">{product.id.slice(-8).toUpperCase()}</p></div></div></td><td className="px-4 py-3 text-sm text-[#716562]">{product.category}</td><td className="px-4 py-3"><StatusBadge status={product.status} /></td><td className="px-4 py-3 text-sm font-semibold text-[#5b504d]">{product.availability}</td><td className="px-4 py-3 text-right text-xs font-semibold text-[#887b77]">{product.showPrice && product.price !== null ? formatCurrency(product.price) : "Oculto"}</td><td><button className="grid size-9 place-items-center rounded-lg text-[#948681] hover:bg-[#f2e9e5]" aria-label={`Acciones de ${product.name}`}><MoreHorizontal className="size-4" /></button></td></tr>)}
+              {filtered.map((product, index) => <tr key={product.id} className="transition hover:bg-[#fdfaf8]"><td className="px-5 py-3"><div className="flex items-center gap-3"><ProductVisual color={index % 2 ? "#c7ad8c" : "#d5b6ae"} accent="#f5ebe6" className="size-12 rounded-xl" /><div><Link href={`/admin/productos/${product.id}`} className="text-sm font-semibold text-[#493b38] hover:text-[#946762]">{product.name}</Link><p className="mt-0.5 text-[11px] text-[#9a8d88]">{product.id.slice(-8).toUpperCase()}</p></div></div></td><td className="px-4 py-3 text-sm text-[#716562]">{product.category}</td><td className="px-4 py-3"><StatusBadge status={product.status} /></td><td className="px-4 py-3 text-sm font-semibold text-[#5b504d]">{product.availability}</td><td className="px-4 py-3 text-right text-xs font-semibold text-[#887b77]">{product.showPrice && product.price !== null ? formatCurrency(product.price) : "Oculto"}</td><td className="px-4 py-3"><ProductActions product={product} /></td></tr>)}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       ) : (
         <div className="grid gap-4 p-4 sm:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((product, index) => <article key={product.id} className="overflow-hidden rounded-2xl border border-[#e9e1dd]"><ProductVisual color={index % 2 ? "#c7ad8c" : "#d5b6ae"} accent="#f5ebe6" className="aspect-[4/2.7] w-full" /><div className="p-4"><div className="flex items-start justify-between"><div><h3 className="font-semibold text-[#493b38]">{product.name}</h3><p className="mt-1 text-xs text-[#948681]">{product.category} · {product.availability}</p></div><StatusBadge status={product.status} /></div><p className="mt-4 text-xs font-semibold text-[#887b77]">{product.showPrice && product.price !== null ? formatCurrency(product.price) : "Precio oculto"}</p></div></article>)}
+          {filtered.map((product, index) => <article key={product.id} className="overflow-hidden rounded-2xl border border-[#e9e1dd]"><ProductVisual color={index % 2 ? "#c7ad8c" : "#d5b6ae"} accent="#f5ebe6" className="aspect-[4/2.7] w-full" /><div className="p-4"><div className="flex items-start justify-between gap-3"><div><Link href={`/admin/productos/${product.id}`} className="font-semibold text-[#493b38] hover:text-[#946762]">{product.name}</Link><p className="mt-1 text-xs text-[#948681]">{product.category} · {product.availability}</p></div><StatusBadge status={product.status} /></div><p className="mt-4 text-xs font-semibold text-[#887b77]">{product.showPrice && product.price !== null ? formatCurrency(product.price) : "Precio oculto"}</p><div className="mt-4 border-t border-[#eee8e4] pt-3"><ProductActions product={product} /></div></div></article>)}
         </div>
       )}
       {filtered.length === 0 && <div className="px-5 py-16 text-center"><p className="font-serif text-xl text-[#574744]">No encontramos productos</p><p className="mt-2 text-sm text-[#91847f]">Prueba con otro nombre o categoría.</p></div>}

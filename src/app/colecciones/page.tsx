@@ -3,6 +3,8 @@ import { CollectionCard, PageIntro } from "@/components/public/content";
 import { PublicShell } from "@/components/public/site-chrome";
 import { getPublicCategories } from "@/server/repositories/public-catalog";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Categorías | Seda y Tul",
   description: "Accesorios artesanales para novias, bautizos, primeras comuniones y ocasiones especiales.",

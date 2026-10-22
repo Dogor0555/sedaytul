@@ -1,7 +1,9 @@
 import { ArrowRight, Eye, LockKeyhole, Mail } from "lucide-react";
 import { login } from "./actions";
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
+
   return <main className="grid min-h-screen bg-[#f9f6f3] text-[#3d302e] lg:grid-cols-[1.05fr_0.95fr]">
     <section className="relative hidden overflow-hidden bg-[#a97872] p-12 lg:flex lg:flex-col lg:justify-between">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,.24),transparent_35%),linear-gradient(145deg,transparent_30%,rgba(72,42,38,.25))]" />
@@ -14,6 +16,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[420px]">
         <div className="mb-10 flex items-center justify-center gap-3 lg:hidden"><span className="grid size-10 place-items-center rounded-full border border-[#d6b5ae] font-serif text-xl italic text-[#855d59]">S</span><span className="font-serif text-2xl">Seda <i className="font-normal text-[#a77670]">y</i> Tul</span></div>
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#9a6b68]">Bienvenida de nuevo</p><h1 className="mt-3 font-serif text-4xl">Iniciar sesión</h1><p className="mt-3 text-sm leading-6 text-[#80736f]">Ingresa tus datos para acceder al panel administrativo.</p>
+        {error ? <p role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">El correo o la contraseña no son correctos. Verifica tus datos e intenta de nuevo.</p> : null}
         <form action={login} className="mt-7 space-y-5">
           <label className="block"><span className="mb-2 block text-sm font-semibold">Correo electrónico</span><span className="relative block"><Mail className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#9b8e89]" /><input name="email" required type="email" autoComplete="email" className="min-h-12 w-full rounded-xl border border-[#ddd4cf] bg-white pl-10 pr-4 text-sm outline-none focus:border-[#9a6b68] focus:ring-2 focus:ring-[#ead8d3]" placeholder="nombre@sedaytul.com" /></span></label>
           <label className="block"><span className="mb-2 flex justify-between text-sm font-semibold"><span>Contraseña</span></span><span className="relative block"><LockKeyhole className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#9b8e89]" /><input name="password" required type="password" autoComplete="current-password" className="min-h-12 w-full rounded-xl border border-[#ddd4cf] bg-white px-10 text-sm outline-none focus:border-[#9a6b68] focus:ring-2 focus:ring-[#ead8d3]" placeholder="••••••••" /><Eye className="absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-[#9b8e89]" /></span></label>
