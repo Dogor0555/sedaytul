@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { FolderPlus, Pencil, Save, Trash2 } from "lucide-react";
 import { PageHeader, Panel, inputClass, labelClass, primaryButton, secondaryButton } from "@/components/admin/admin-ui";
-import { CategoryCoverUpload } from "@/components/admin/category-cover-upload";
+import { SingleImageUpload } from "@/components/admin/single-image-upload";
 import { db } from "@/lib/db";
 import { createCategory, deleteCategory, updateCategory } from "../actions";
 
@@ -21,7 +21,8 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
           <input name="description" maxLength={300} className={inputClass} placeholder="Descripción breve (opcional)" />
           <div className="flex flex-wrap items-center gap-3"><label className="flex items-center gap-2 text-sm font-semibold text-[#594946]"><input name="active" type="checkbox" defaultChecked className="size-4 accent-[#92635e]" />Activa</label><button className={primaryButton}><FolderPlus className="size-4" />Crear categoría</button></div>
         </div>
-        <CategoryCoverUpload />
+        <SingleImageUpload name="coverImageId" label="Imagen de portada" />
+        <p className="text-xs text-[#8f827d]">Si no subes una portada, la categoría se mostrará sin imagen; no se asignará una fotografía automática.</p>
       </form>
     </Panel>
     <Panel className="overflow-hidden">
@@ -36,7 +37,7 @@ export default async function CategoriesPage({ searchParams }: { searchParams: P
               <div className="mt-4 rounded-2xl border border-[#e9e1dd] bg-[#fcfaf8] p-4 text-left sm:min-w-[520px]">
                 <form action={updateCategory.bind(null, category.id)} className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2"><label><span className={labelClass}>Nombre</span><input name="name" required minLength={2} maxLength={80} defaultValue={category.name} className={inputClass} /></label><label><span className={labelClass}>Descripción</span><input name="description" maxLength={300} defaultValue={category.description ?? ""} className={inputClass} /></label></div>
-                  <CategoryCoverUpload current={category.coverImage} />
+                  <SingleImageUpload name="coverImageId" label="Imagen de portada" current={category.coverImage} />
                   <div className="flex flex-wrap items-center justify-between gap-3"><label className="flex items-center gap-2 text-sm font-semibold text-[#594946]"><input name="active" type="checkbox" defaultChecked={category.active} className="size-4 accent-[#92635e]" />Categoría activa</label><button className={primaryButton}><Save className="size-4" />Guardar cambios</button></div>
                 </form>
                 <div className="mt-4 border-t border-[#eadfda] pt-4">

@@ -3,7 +3,7 @@ export type Category = {
   name: string;
   eyebrow: string;
   description: string;
-  image: string;
+  image: string | null;
 };
 
 export type Product = {

@@ -16,7 +16,7 @@ export async function getPublicCategories(): Promise<PublicCategory[]> {
     name: category.name,
     eyebrow: fallbackCategories.find((item) => item.slug === category.slug)?.eyebrow ?? `Colección ${String(index + 1).padStart(2, "0")}`,
     description: category.description ?? "Accesorios artesanales creados para acompañar momentos especiales.",
-    image: category.coverImage?.url ?? fallbackCategories.find((item) => item.slug === category.slug)?.image ?? fallbackImage,
+    image: category.coverImage?.url ?? null,
   }));
 }
 

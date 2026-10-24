@@ -47,11 +47,12 @@ function ArtesanalSection({ section }: { section: HomeSection }) {
   return (
     <section data-preview-section="artesanal" hidden={!section.visible} className="grid bg-[#423A36] text-[#F9F6F1] lg:grid-cols-2">
       <div className="min-h-[560px] overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85"
+        {section.image ? <img
+          src={section.image}
           alt="Detalle de una pieza artesanal con pequeños cristales"
+          data-preview-field="image"
           className="h-full w-full object-cover opacity-90"
-        />
+        /> : null}
       </div>
       <div className="flex items-center px-7 py-20 sm:px-16 lg:px-[12%]">
         <div>
@@ -139,11 +140,12 @@ export default async function Home() {
             </div>
           </div>
           <div className="relative min-h-[65vh] overflow-hidden">
-            <img
-              src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=1800&q=90"
+            {hero.image ? <img
+              src={hero.image}
               alt="Detalle de accesorios delicados en tonos dorados"
+              data-preview-field="image"
               className="absolute inset-0 h-full w-full object-cover object-center"
-            />
+            /> : null}
             <div className="absolute inset-0 bg-gradient-to-t from-[#423A36]/25 to-transparent" />
             <span className="absolute bottom-8 right-8 flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-white">
               <ArrowDown size={14} /> Descubrir

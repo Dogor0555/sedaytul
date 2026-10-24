@@ -7,6 +7,7 @@ type PreviewSection = {
   title: string;
   subtitle: string;
   body: string;
+  image: string | null;
   visible: boolean;
   sortOrder: number;
 };
@@ -52,10 +53,12 @@ export function LivePreviewBridge() {
         const eyebrow = root.querySelector<HTMLElement>('[data-preview-field="subtitle"]');
         const title = root.querySelector<HTMLElement>('[data-preview-field="title"]');
         const body = root.querySelector<HTMLElement>('[data-preview-field="body"]');
+        const image = root.querySelector<HTMLImageElement>('[data-preview-field="image"]');
 
         if (eyebrow) updateEyebrow(eyebrow, section.subtitle);
         if (title) updateTitle(title, section.title);
         if (body) body.textContent = section.body;
+        if (image && section.image) image.src = section.image;
       }
 
       const orderedMiddleSections = event.data.sections
@@ -70,15 +73,9 @@ export function LivePreviewBridge() {
       }
     }
 
-    function preventPreviewNavigation(event: MouseEvent) {
-      if (event.target instanceof Element && event.target.closest("a")) event.preventDefault();
-    }
-
     window.addEventListener("message", handleMessage);
-    document.addEventListener("click", preventPreviewNavigation, true);
     return () => {
       window.removeEventListener("message", handleMessage);
-      document.removeEventListener("click", preventPreviewNavigation, true);
     };
   }, []);
 

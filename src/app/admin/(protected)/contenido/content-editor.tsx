@@ -24,7 +24,10 @@ export function ContentEditor({ initialSections }: { initialSections: ContentSec
           />
         ))}
       </div>
-      <LiveSitePreview sections={sections} />
+      <LiveSitePreview sections={sections.map((section) => ({
+        ...section,
+        image: section.image?.url ?? null,
+      }))} />
     </div>
   );
 }

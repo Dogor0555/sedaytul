@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Eye, EyeOff, FileText, Save } from "lucide-react";
 import { Panel, inputClass, labelClass, primaryButton } from "@/components/admin/admin-ui";
+import { SingleImageUpload, type UploadedImage } from "@/components/admin/single-image-upload";
 import { saveContentSection, type ContentActionState } from "./actions";
 
 export type ContentSection = {
@@ -12,6 +13,7 @@ export type ContentSection = {
   title: string;
   subtitle: string;
   body: string;
+  image: UploadedImage | null;
   visible: boolean;
   sortOrder: number;
 };
@@ -37,6 +39,17 @@ export function ContentSectionForm({ section, onChange }: { section: ContentSect
           <label><span className={labelClass}>Título</span><input name="title" maxLength={200} className={inputClass} value={section.title} onChange={(event) => onChange({ title: event.target.value })} /><ErrorMessage error={state.errors?.title} /></label>
           <label><span className={labelClass}>Subtítulo</span><input name="subtitle" maxLength={300} className={inputClass} value={section.subtitle} onChange={(event) => onChange({ subtitle: event.target.value })} /><ErrorMessage error={state.errors?.subtitle} /></label>
           <label className="sm:col-span-2"><span className={labelClass}>Contenido</span><textarea name="body" maxLength={5000} className={`${inputClass} min-h-32 py-3 leading-6`} value={section.body} onChange={(event) => onChange({ body: event.target.value })} /><ErrorMessage error={state.errors?.body} /></label>
+          {section.key === "hero" || section.key === "artesanal" ? (
+            <div className="sm:col-span-2">
+              <SingleImageUpload
+                name="mediaId"
+                label={section.key === "hero" ? "Imagen principal de portada" : "Imagen del trabajo artesanal"}
+                current={section.image}
+                allowRemove={false}
+                onChange={(image) => onChange({ image })}
+              />
+            </div>
+          ) : <input type="hidden" name="mediaId" value="" />}
           <label><span className={labelClass}>Orden</span><input name="sortOrder" type="number" min={0} max={999} step={1} required className={inputClass} value={section.sortOrder} onChange={(event) => onChange({ sortOrder: event.target.valueAsNumber || 0 })} /><ErrorMessage error={state.errors?.sortOrder} /></label>
           <label className="flex min-h-11 cursor-pointer items-center gap-3 self-end rounded-xl border border-[#ddd4cf] px-3.5 text-sm font-semibold text-[#4d403d]">
             <input name="visible" type="checkbox" checked={section.visible} onChange={(event) => onChange({ visible: event.target.checked })} className="size-4 accent-[#956762]" />

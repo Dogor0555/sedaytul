@@ -10,6 +10,10 @@ const contentSchema = z.object({
   title: z.string().trim().max(200).optional(),
   subtitle: z.string().trim().max(300).optional(),
   body: z.string().trim().max(5000).optional(),
+  mediaId: z.preprocess(
+    (value) => value == null || typeof value === "string" && value.trim() === "" ? null : value,
+    z.string().trim().min(1).nullable(),
+  ),
   visible: z.boolean(),
   sortOrder: z.coerce.number().int("El orden debe ser un número entero.").min(0, "El orden no puede ser negativo.").max(999),
 });
@@ -30,6 +34,7 @@ export async function saveContentSection(
     title: formData.get("title") || undefined,
     subtitle: formData.get("subtitle") || undefined,
     body: formData.get("body") || undefined,
+    mediaId: formData.get("mediaId"),
     visible: formData.get("visible") === "on",
     sortOrder: formData.get("sortOrder"),
   });

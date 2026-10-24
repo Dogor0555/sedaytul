@@ -21,6 +21,7 @@ export type HomeSection = {
   eyebrow: string;
   title: string;
   body: string;
+  image: string | null;
   visible: boolean;
   sortOrder: number;
 };
@@ -55,6 +56,7 @@ const fallbackSections: Record<HomeSectionKey, Omit<HomeSection, "key">> = {
     eyebrow: "Accesorios artesanales",
     title: "Pequeños detalles,\ngrandes recuerdos",
     body: "Peinetas, tocados, diademas, coronas y lazos hechos en El Salvador para acompañar celebraciones inolvidables.",
+    image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=1800&q=90",
     visible: true,
     sortOrder: 0,
   },
@@ -62,6 +64,7 @@ const fallbackSections: Record<HomeSectionKey, Omit<HomeSection, "key">> = {
     eyebrow: "Hecho con intención",
     title: "El valor de hacer\nlas cosas despacio",
     body: "Cada flor, perla y lazo encuentra su lugar a través de un proceso manual, atento a las proporciones, el color y los pequeños acabados.",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85",
     visible: true,
     sortOrder: 1,
   },
@@ -69,6 +72,7 @@ const fallbackSections: Record<HomeSectionKey, Omit<HomeSection, "key">> = {
     eyebrow: "Nuestra historia",
     title: "Crear un detalle.\nGuardar una memoria.",
     body: "Seda y Tul nace en El Salvador del deseo de acompañar celebraciones con piezas hechas a mano, delicadas y profundamente personales.",
+    image: null,
     visible: true,
     sortOrder: 2,
   },
@@ -76,6 +80,7 @@ const fallbackSections: Record<HomeSectionKey, Omit<HomeSection, "key">> = {
     eyebrow: "¿Buscás algo especial?",
     title: "Encontremos el detalle para\ntu celebración",
     body: "Contanos la fecha, el tipo de celebración y el accesorio que tenés en mente. Te responderemos con las opciones disponibles.",
+    image: null,
     visible: true,
     sortOrder: 3,
   },
@@ -119,6 +124,7 @@ export const getPublicHomeContent = cache(async (): Promise<HomeSection[]> => {
   try {
     const rows = await db.pageContent.findMany({
       where: { pageKey: "home", sectionKey: { in: sectionKeys } },
+      include: { media: { select: { url: true } } },
     });
     const stored = new Map(rows.map((row) => [row.sectionKey, row]));
 
@@ -130,6 +136,7 @@ export const getPublicHomeContent = cache(async (): Promise<HomeSection[]> => {
         eyebrow: row?.subtitle?.trim() || fallback.eyebrow,
         title: row?.title?.trim() || fallback.title,
         body: row?.body?.trim() || fallback.body,
+        image: row?.media?.url || fallback.image,
         visible: row?.visible ?? fallback.visible,
         sortOrder: row?.sortOrder ?? fallback.sortOrder,
       };

@@ -24,7 +24,7 @@ export function ProductCard({ product }: { product: Product }) {
 export function CollectionCard({ collection, index }: { collection: Category; index: number }) {
   return (
     <article className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-20 ${index % 2 ? "lg:[&>*:first-child]:order-2" : ""}`}>
-      <div className="overflow-hidden bg-[#E8D6CF]"><img src={collection.image} alt={`Accesorios para ${collection.name.toLowerCase()}`} className="aspect-[4/5] w-full object-cover transition duration-700 hover:scale-[1.02]" /></div>
+      <div className="overflow-hidden bg-[#E8D6CF]">{collection.image ? <img src={collection.image} alt={`Accesorios para ${collection.name.toLowerCase()}`} className="aspect-[4/5] w-full object-cover transition duration-700 hover:scale-[1.02]" /> : <div className="grid aspect-[4/5] place-items-center px-8 text-center text-[10px] uppercase tracking-[0.25em] text-[#8b756a]">Imagen pendiente</div>}</div>
       <div className="px-3 py-4 sm:px-10"><p className="text-[10px] uppercase tracking-[0.34em] text-[#9B7654]">{collection.eyebrow}</p><h2 className="mt-5 text-5xl italic sm:text-6xl">{collection.name}</h2><p className="mt-6 max-w-md text-base leading-8 text-[#685B54]">{collection.description}</p><Link href={`/productos?categoria=${collection.slug}`} className="mt-8 inline-flex items-center gap-3 border-b border-[#857268] pb-2 text-[10px] uppercase tracking-[0.25em]">Descubrir piezas <ArrowRight size={14} /></Link></div>
     </article>
   );

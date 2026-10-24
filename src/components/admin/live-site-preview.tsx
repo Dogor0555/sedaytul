@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Eye, X } from "lucide-react";
+import { ArrowLeft, ExternalLink, Eye, Home, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,6 +9,7 @@ export type LivePreviewSection = {
   title: string;
   subtitle: string;
   body: string;
+  image: string | null;
   visible: boolean;
   sortOrder: number;
 };
@@ -16,6 +17,7 @@ export type LivePreviewSection = {
 function PreviewFrame({ sections }: { sections: LivePreviewSection[] }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);
+  const [pathname, setPathname] = useState("/");
 
   useEffect(() => {
     if (!loaded) return;
@@ -33,9 +35,27 @@ function PreviewFrame({ sections }: { sections: LivePreviewSection[] }) {
           <span className="size-2.5 rounded-full bg-[#d9c79d]" />
           <span className="size-2.5 rounded-full bg-[#aebfa9]" />
         </div>
+        <button
+          type="button"
+          onClick={() => frameRef.current?.contentWindow?.history.back()}
+          title="Volver"
+          className="text-[#756762] hover:text-[#3f302e]"
+        >
+          <ArrowLeft className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (frameRef.current) frameRef.current.src = "/";
+          }}
+          title="Ir al inicio"
+          className="text-[#756762] hover:text-[#3f302e]"
+        >
+          <Home className="size-4" />
+        </button>
         <div className="flex min-w-0 flex-1 items-center justify-center gap-2 rounded-lg border border-[#e4dcd7] bg-white px-3 py-1.5 text-[10px] font-medium text-[#857873]">
           <Eye className="size-3 text-[#9a6b68]" />
-          <span className="truncate">Vista previa del inicio</span>
+          <span className="truncate">{pathname}</span>
         </div>
         <Link href="/" target="_blank" title="Abrir sitio" className="text-[#756762] hover:text-[#3f302e]">
           <ExternalLink className="size-4" />
@@ -49,6 +69,7 @@ function PreviewFrame({ sections }: { sections: LivePreviewSection[] }) {
           title="Vista previa en vivo del sitio"
           onLoad={() => {
             setLoaded(true);
+            setPathname(frameRef.current?.contentWindow?.location.pathname ?? "/");
             frameRef.current?.contentWindow?.postMessage(
               { type: "sedaytul:content-preview", sections },
               window.location.origin,
