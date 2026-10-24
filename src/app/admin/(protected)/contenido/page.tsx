@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/admin/admin-ui";
 import { requireUser } from "@/lib/auth/require-user";
-import { db } from "@/lib/db";
-import { ContentSectionForm } from "./content-section-form";
+import { getPublicHomeContent } from "@/server/repositories/public-settings";
+import { ContentEditor } from "./content-editor";
 
 const sections = [
   { key: "hero", label: "Portada", description: "Mensaje principal que recibe a los visitantes." },
@@ -12,9 +12,7 @@ const sections = [
 
 export default async function ContentPage() {
   const user = await requireUser();
-  const storedSections = await db.pageContent.findMany({
-    where: { pageKey: "home", sectionKey: { in: sections.map((section) => section.key) } },
-  });
+  const storedSections = await getPublicHomeContent();
 
   return (
     <div className="space-y-7">
@@ -23,24 +21,19 @@ export default async function ContentPage() {
         title="Contenido"
         description={`Edita los textos y el orden de las secciones de inicio. Sesión de ${user.name ?? user.email ?? "administrador"}.`}
       />
-      <div className="space-y-5">
-        {sections.map((section, index) => {
-          const content = storedSections.find((item) => item.sectionKey === section.key);
-          return (
-            <ContentSectionForm
-              key={section.key}
-              section={{
-                ...section,
-                title: content?.title ?? "",
-                subtitle: content?.subtitle ?? "",
-                body: content?.body ?? "",
-                visible: content?.visible ?? true,
-                sortOrder: content?.sortOrder ?? index,
-              }}
-            />
-          );
+      <ContentEditor
+        initialSections={sections.map((section, index) => {
+          const content = storedSections.find((item) => item.key === section.key);
+          return {
+            ...section,
+            title: content?.title ?? "",
+            subtitle: content?.eyebrow ?? "",
+            body: content?.body ?? "",
+            visible: content?.visible ?? true,
+            sortOrder: content?.sortOrder ?? index,
+          };
         })}
-      </div>
+      />
     </div>
   );
 }

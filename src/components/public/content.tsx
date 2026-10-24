@@ -3,8 +3,8 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Category, Product } from "@/config/demo-content";
 
-export function Eyebrow({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
-  return <p className={`mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.35em] ${light ? "text-[#E8D6CF]" : "text-[#9B7654]"}`}><span className="h-px w-8 bg-current" />{children}</p>;
+export function Eyebrow({ children, light = false, previewField }: { children: React.ReactNode; light?: boolean; previewField?: string }) {
+  return <p data-preview-field={previewField} className={`mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.35em] ${light ? "text-[#E8D6CF]" : "text-[#9B7654]"}`}><span className="h-px w-8 bg-current" />{children}</p>;
 }
 
 export function ProductCard({ product }: { product: Product }) {

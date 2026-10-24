@@ -2,6 +2,7 @@
 import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Eyebrow, ProductCard } from "@/components/public/content";
+import { LivePreviewBridge } from "@/components/public/live-preview-bridge";
 import { PublicShell } from "@/components/public/site-chrome";
 import { processSteps } from "@/config/demo-content";
 import { getPublicProducts } from "@/server/repositories/public-catalog";
@@ -19,13 +20,15 @@ function SectionTitle({
   title,
   className = "",
   indentSecondLine = false,
+  preview = false,
 }: {
   title: string;
   className?: string;
   indentSecondLine?: boolean;
+  preview?: boolean;
 }) {
   return (
-    <span className={className}>
+    <span className={className} data-preview-field={preview ? "title" : undefined} data-preview-indent={indentSecondLine ? "true" : undefined}>
       {title.split("\n").map((line, index) => (
         <span
           key={`${line}-${index}`}
@@ -42,7 +45,7 @@ function SectionTitle({
 
 function ArtesanalSection({ section }: { section: HomeSection }) {
   return (
-    <section className="grid bg-[#423A36] text-[#F9F6F1] lg:grid-cols-2">
+    <section data-preview-section="artesanal" hidden={!section.visible} className="grid bg-[#423A36] text-[#F9F6F1] lg:grid-cols-2">
       <div className="min-h-[560px] overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85"
@@ -52,12 +55,12 @@ function ArtesanalSection({ section }: { section: HomeSection }) {
       </div>
       <div className="flex items-center px-7 py-20 sm:px-16 lg:px-[12%]">
         <div>
-          <Eyebrow light>{section.eyebrow}</Eyebrow>
+          <Eyebrow light previewField="subtitle">{section.eyebrow}</Eyebrow>
           <Sparkles className="mb-7 text-[#C7AD8C]" strokeWidth={1} />
           <h2 className="text-5xl leading-tight sm:text-6xl">
-            <SectionTitle title={section.title} />
+            <SectionTitle title={section.title} preview />
           </h2>
-          <p className="mt-7 max-w-lg whitespace-pre-line text-sm leading-8 text-white/65">
+          <p data-preview-field="body" className="mt-7 max-w-lg whitespace-pre-line text-sm leading-8 text-white/65">
             {section.body}
           </p>
           <Link
@@ -74,12 +77,12 @@ function ArtesanalSection({ section }: { section: HomeSection }) {
 
 function HistoriaSection({ section }: { section: HomeSection }) {
   return (
-    <section className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
-      <Eyebrow>{section.eyebrow}</Eyebrow>
+    <section data-preview-section="historia" hidden={!section.visible} className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
+      <Eyebrow previewField="subtitle">{section.eyebrow}</Eyebrow>
       <h2 className="mx-auto max-w-4xl text-4xl leading-tight sm:text-6xl">
-        <SectionTitle title={section.title} />
+        <SectionTitle title={section.title} preview />
       </h2>
-      <p className="mx-auto mt-8 max-w-2xl whitespace-pre-line text-base leading-8 text-[#685B54]">
+      <p data-preview-field="body" className="mx-auto mt-8 max-w-2xl whitespace-pre-line text-base leading-8 text-[#685B54]">
         {section.body}
       </p>
       <Link
@@ -103,24 +106,21 @@ export default async function Home() {
   const hero = content.find((section) => section.key === "hero");
   const contact = content.find((section) => section.key === "contacto");
   const middleSections = content
-    .filter(
-      (section) =>
-        (section.key === "artesanal" || section.key === "historia") &&
-        section.visible,
-    )
+    .filter((section) => section.key === "artesanal" || section.key === "historia")
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <PublicShell>
-      {hero?.visible ? (
-        <section className="grid min-h-[calc(100vh-6rem)] bg-[#E8D6CF] lg:grid-cols-[42%_58%]">
+      <LivePreviewBridge />
+      {hero ? (
+        <section data-preview-section="hero" hidden={!hero.visible} className="grid min-h-[calc(100vh-6rem)] bg-[#E8D6CF] lg:grid-cols-[42%_58%]">
           <div className="relative flex flex-col justify-center px-7 py-20 sm:px-14 lg:px-[10%]">
             <div className="absolute left-8 top-10 h-24 w-24 rounded-full border border-[#C7AD8C]/60 sm:left-auto sm:right-10" />
-            <Eyebrow>{hero.eyebrow}</Eyebrow>
+            <Eyebrow previewField="subtitle">{hero.eyebrow}</Eyebrow>
             <h1 className="relative z-10 text-[clamp(3.5rem,7vw,7.4rem)] leading-[0.88] tracking-[-0.04em]">
-              <SectionTitle title={hero.title} indentSecondLine />
+              <SectionTitle title={hero.title} indentSecondLine preview />
             </h1>
-            <p className="mt-9 max-w-md whitespace-pre-line text-sm leading-7 text-[#685B54] sm:text-base">
+            <p data-preview-field="body" className="mt-9 max-w-md whitespace-pre-line text-sm leading-7 text-[#685B54] sm:text-base">
               {hero.body}
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
@@ -252,15 +252,15 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {contact?.visible ? (
-        <section className="relative overflow-hidden bg-[#E8D6CF] px-5 py-24 text-center sm:px-8">
+      {contact ? (
+        <section data-preview-section="contacto" hidden={!contact.visible} className="relative overflow-hidden bg-[#E8D6CF] px-5 py-24 text-center sm:px-8">
           <div className="absolute -left-16 -top-24 h-72 w-72 rounded-full border border-[#C7AD8C]" />
           <div className="relative">
-            <Eyebrow>{contact.eyebrow}</Eyebrow>
+            <Eyebrow previewField="subtitle">{contact.eyebrow}</Eyebrow>
             <h2 className="mx-auto mt-6 max-w-3xl text-5xl leading-tight sm:text-6xl">
-              <SectionTitle title={contact.title} />
+              <SectionTitle title={contact.title} preview />
             </h2>
-            <p className="mx-auto mt-6 max-w-2xl whitespace-pre-line text-sm leading-7 text-[#685B54]">
+            <p data-preview-field="body" className="mx-auto mt-6 max-w-2xl whitespace-pre-line text-sm leading-7 text-[#685B54]">
               {contact.body}
             </p>
             <a
