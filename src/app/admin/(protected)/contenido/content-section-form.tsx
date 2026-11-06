@@ -64,7 +64,7 @@ function ColorField({
         >
           Color automático
         </button>
-        <span className="text-[11px] text-[#978a85]">Elegí tonos claros para conservar la legibilidad.</span>
+        <span className="text-[11px] text-[#978a85]">Paleta del sitio: beige #D8C3A5, dorado #B08D57, blanco #FFFFFF y negro #222222.</span>
       </div>
       <ErrorMessage error={error} />
     </div>

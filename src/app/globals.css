@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #423a36;
+  --beige-calido: #D8C3A5;
+  --dorado-tostado: #B08D57;
+  --blanco: #FFFFFF;
+  --negro-elegante: #222222;
+  --background: var(--blanco);
+  --foreground: var(--negro-elegante);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-beige-calido: var(--beige-calido);
+  --color-dorado-tostado: var(--dorado-tostado);
+  --color-blanco: var(--blanco);
+  --color-negro-elegante: var(--negro-elegante);
   --font-sans: var(--font-dm-sans);
   --font-serif: var(--font-cormorant);
 }
@@ -27,6 +35,94 @@ textarea {
 }
 
 ::selection {
-  background: #efe9df;
-  color: #423a36;
+  background: var(--beige-calido);
+  color: var(--negro-elegante);
+}
+
+/* Keep legacy Tailwind color utilities aligned with the current brand palette. */
+:where(
+  [class~="bg-[#423A36]"], [class~="bg-[#3f302e]"], [class~="bg-[#42322f]"],
+  [class~="bg-[#59423f]"], [class~="bg-[#655C57]"]
+) {
+  background-color: var(--negro-elegante) !important;
+}
+
+:where(
+  [class~="bg-[#9B7654]"], [class~="bg-[#857268]"], [class~="bg-[#a97872]"],
+  [class~="bg-[#9a6b68]"]
+) {
+  background-color: var(--dorado-tostado) !important;
+}
+
+:where(
+  [class~="bg-[#FAF9F6]"], [class~="bg-[#FCFBF8]"], [class~="bg-[#FCFAF8]"],
+  [class~="bg-[#F7F5F1]"], [class~="bg-[#F5F2EC]"], [class~="bg-[#F1E8E3]"],
+  [class~="bg-[#F2E6E0]"], [class~="bg-[#FAF8F4]"], [class~="bg-[#FAF8F6]"],
+  [class~="bg-[#faf8f6]"], [class~="bg-[#f8f6f3]"], [class~="bg-[#faf5f1]"]
+) {
+  background-color: var(--beige-calido) !important;
+}
+
+:where([class~="bg-[#F9F6F1]"]) {
+  background-color: var(--blanco) !important;
+}
+
+:where(
+  [class~="text-[#423A36]"], [class~="text-[#3e312f]"], [class~="text-[#3f302e]"],
+  [class~="text-[#3f3532]"], [class~="text-[#4e403d]"], [class~="text-[#4d403d]"],
+  [class~="text-[#685B54]"], [class~="text-[#5f514e]"], [class~="text-[#5f4a45]"],
+  [class~="text-[#302725]"], [class~="text-[#50423f]"], [class~="text-[#8f827d]"],
+  [class~="text-[#978a85]"], [class~="text-[#746966]"], [class~="text-[#948783]"],
+  [class~="text-[#9b8d88]"], [class~="text-[#8d807c]"], [class~="text-[#8b756a]"],
+  [class~="text-[#a79b95]"]
+) {
+  color: var(--negro-elegante) !important;
+}
+
+:where(
+  [class~="text-[#9B7654]"], [class~="text-[#857268]"], [class~="text-[#C7AD8C]"],
+  [class~="text-[#9a6b68]"], [class~="text-[#8e615c]"], [class~="text-[#89605b]"]
+) {
+  color: var(--dorado-tostado) !important;
+}
+
+:where([class*="text-[#F9F6F1]"]) {
+  color: var(--blanco) !important;
+}
+
+:where(
+  [class~="border-[#E2DCD4]"], [class~="border-[#EDE8E2]"], [class~="border-[#D8D1C8]"],
+  [class~="border-[#DED5D0]"], [class~="border-[#DED8D0]"], [class~="border-[#ded5d0]"],
+  [class~="border-[#ddd4cf]"], [class~="border-[#ded3cd]"], [class~="border-[#E6E0D8]"],
+  [class~="border-[#E5E0D8]"], [class~="border-[#E5DBD6]"], [class~="border-[#E4D9D3]"],
+  [class~="border-[#E4DCD7]"], [class~="border-[#E8E1DD]"]
+) {
+  border-color: var(--beige-calido) !important;
+}
+
+:where([class~="hover:bg-[#655C57]"]):hover,
+:where([class~="hover:bg-[#59423f]"]):hover {
+  background-color: var(--negro-elegante) !important;
+}
+
+:where([class~="hover:bg-[#F7F5F1]"]):hover,
+:where([class~="hover:bg-[#faf5f1]"]):hover {
+  background-color: var(--beige-calido) !important;
+}
+
+:where([class~="hover:text-[#9B7654]"]):hover,
+:where([class~="hover:text-[#9B7654]"]):focus-visible {
+  color: var(--dorado-tostado) !important;
+}
+
+:where([class~="focus:border-[#9a6b68]"]):focus {
+  border-color: var(--dorado-tostado) !important;
+}
+
+:where([class~="focus:border-[#9B7654]"]):focus {
+  border-color: var(--dorado-tostado) !important;
+}
+
+:where([class~="accent-[#9B7654]"]) {
+  accent-color: var(--dorado-tostado) !important;
 }

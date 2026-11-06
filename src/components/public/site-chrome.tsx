@@ -60,9 +60,6 @@ export function Header({
 
         <div className="flex min-w-0 flex-col items-center">
           <BrandMark logoUrl={settings.logoUrl} businessName={settings.businessName} />
-          <p className="mt-1 max-w-[230px] truncate text-center text-[7px] uppercase tracking-[0.2em] text-[#857268] sm:max-w-none sm:text-[8px]">
-            {settings.tagline}
-          </p>
         </div>
 
         <div className="flex items-center justify-end gap-2">

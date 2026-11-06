@@ -200,7 +200,7 @@ export default async function Home() {
     <PublicShell>
       <LivePreviewBridge />
       {hero ? (
-        <section data-preview-section="hero" hidden={!hero.visible} style={{ backgroundColor: heroBackground, color: heroIsLight ? "#423A36" : "#F9F6F1", display: hero.visible ? undefined : "none" }} className="grid min-h-[calc(100vh-9rem)] border-b border-[#EDE8E2] lg:grid-cols-[44%_56%]">
+        <section data-preview-section="hero" hidden={!hero.visible} style={{ backgroundColor: heroBackground, color: heroIsLight ? "#222222" : "#FFFFFF", display: hero.visible ? undefined : "none" }} className="grid min-h-[calc(100vh-9rem)] border-b border-[#EDE8E2] lg:grid-cols-[44%_56%]">
           <div className="relative flex flex-col justify-center px-7 py-16 sm:px-14 lg:px-[9%]">
             <div className={`absolute left-8 top-10 h-24 w-24 rounded-full border sm:left-auto sm:right-10 ${heroIsLight ? "border-[#E2DCD4]" : "border-white/30"}`} />
             <Eyebrow light={!heroIsLight} previewField="subtitle">{hero.eyebrow}</Eyebrow>
@@ -271,7 +271,7 @@ export default async function Home() {
       ) : null}
 
       {historia ? (
-        <section data-preview-section="historia" hidden={!historia.visible} style={{ backgroundColor: historiaBackground, color: historiaIsLight ? "#423A36" : "#F9F6F1" }} className="px-5 py-24 sm:px-8 lg:py-32">
+        <section data-preview-section="historia" hidden={!historia.visible} style={{ backgroundColor: historiaBackground, color: historiaIsLight ? "#222222" : "#FFFFFF" }} className="px-5 py-24 sm:px-8 lg:py-32">
           <div className="mx-auto grid max-w-[1200px] items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
             <div className="relative min-h-80 overflow-hidden bg-[#5a4c46]">
               {historia.image ? <img src={historia.image} alt="Proceso artesanal de Seda y Tul" data-preview-field="image" className="absolute inset-0 h-full w-full object-cover opacity-90" /> : <div className="grid min-h-80 place-items-center"><Heart size={46} strokeWidth={1} className="text-[#C7AD8C]" /></div>}
