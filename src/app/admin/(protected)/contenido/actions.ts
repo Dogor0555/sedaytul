@@ -5,8 +5,10 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 
+const sectionKeySchema = z.enum(["hero", "accesorios", "regalos", "personalizados", "corporativos", "historia", "tips", "pagos", "contacto"]);
+
 const contentSchema = z.object({
-  sectionKey: z.enum(["hero", "accesorios", "regalos", "personalizados", "corporativos", "historia", "tips", "pagos", "contacto"]),
+  sectionKey: sectionKeySchema,
   title: z.string().trim().max(200).optional(),
   subtitle: z.string().trim().max(300).optional(),
   body: z.string().trim().max(5000).optional(),
@@ -88,4 +90,61 @@ export async function saveContentSection(
   revalidatePath("/");
   revalidatePath("/admin/contenido");
   return { status: "success", message: "Sección guardada correctamente." };
+}
+
+export async function deleteContentSection(sectionKey: string): Promise<ContentActionState> {
+  const parsed = sectionKeySchema.safeParse(sectionKey);
+  if (!parsed.success) return { status: "error", message: "Sección inválida." };
+
+  const user = await requireUser();
+  const key = parsed.data;
+  const deletedAt = new Date();
+
+  await db.$transaction(async (tx) => {
+    const content = await tx.pageContent.upsert({
+      where: { pageKey_sectionKey: { pageKey: "home", sectionKey: key } },
+      update: { deletedAt },
+      create: { pageKey: "home", sectionKey: key, deletedAt },
+    });
+    await tx.activityLog.create({
+      data: {
+        userId: user.id,
+        action: "DELETE",
+        entityType: "PageContent",
+        entityId: content.id,
+        metadata: { pageKey: "home", sectionKey: key, deletedAt: deletedAt.toISOString() },
+      },
+    });
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/contenido");
+  return { status: "success", message: "Sección eliminada del sitio." };
+}
+
+export async function restoreContentSection(sectionKey: string): Promise<ContentActionState> {
+  const parsed = sectionKeySchema.safeParse(sectionKey);
+  if (!parsed.success) return { status: "error", message: "Sección inválida." };
+
+  const user = await requireUser();
+  const key = parsed.data;
+  const restored = await db.pageContent.updateMany({
+    where: { pageKey: "home", sectionKey: key, deletedAt: { not: null } },
+    data: { deletedAt: null },
+  });
+
+  if (restored.count) {
+    await db.activityLog.create({
+      data: {
+        userId: user.id,
+        action: "RESTORE",
+        entityType: "PageContent",
+        metadata: { pageKey: "home", sectionKey: key },
+      },
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/contenido");
+  return { status: "success", message: "Sección restaurada." };
 }

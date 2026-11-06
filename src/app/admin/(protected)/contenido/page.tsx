@@ -1,7 +1,8 @@
 import { PageHeader } from "@/components/admin/admin-ui";
 import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
-import { getPublicHomeContent } from "@/server/repositories/public-settings";
+import { getPublicAboutContent, getPublicHomeContent } from "@/server/repositories/public-settings";
+import { AboutPageForm } from "./about-page-form";
 import { ContentEditor } from "./content-editor";
 
 const sections = [
@@ -18,13 +19,19 @@ const sections = [
 
 export default async function ContentPage() {
   const user = await requireUser();
-  const [storedSections, persistedSections] = await Promise.all([
+  const [storedSections, aboutContent, persistedSections] = await Promise.all([
     getPublicHomeContent(),
+    getPublicAboutContent(),
     db.pageContent.findMany({
-      where: { pageKey: "home" },
+      where: { pageKey: { in: ["home", "about"] } },
       include: { media: { select: { id: true, url: true } } },
     }),
   ]);
+  const deletedSections = persistedSections.flatMap((row) => {
+    if (row.pageKey !== "home" || !row.deletedAt) return [];
+    const definition = sections.find((section) => section.key === row.sectionKey);
+    return definition ? [{ key: definition.key, label: definition.label }] : [];
+  });
 
   return (
     <div className="space-y-7">
@@ -34,9 +41,10 @@ export default async function ContentPage() {
         description={`Edita los textos, imágenes y orden de las secciones de inicio. Sesión de ${user.name ?? user.email ?? "administrador"}.`}
       />
       <ContentEditor
+        initialDeletedSections={deletedSections}
         initialSections={sections.map((section, index) => {
           const content = storedSections.find((item) => item.key === section.key);
-          const persisted = persistedSections.find((item) => item.sectionKey === section.key);
+          const persisted = persistedSections.find((item) => item.pageKey === "home" && item.sectionKey === section.key);
           return {
             ...section,
             title: content?.title ?? "",
@@ -53,6 +61,21 @@ export default async function ContentPage() {
             sortOrder: content?.sortOrder ?? index,
           };
         })}
+      />
+      <AboutPageForm
+        content={{
+          heroEyebrow: aboutContent.hero.eyebrow,
+          heroTitle: aboutContent.hero.title,
+          heroBody: aboutContent.hero.body,
+          heroImage: aboutContent.hero.image ? {
+            id: persistedSections.find((item) => item.pageKey === "about" && item.sectionKey === "hero")?.media?.id ?? "",
+            url: aboutContent.hero.image,
+          } : null,
+          storyEyebrow: aboutContent.story.eyebrow,
+          storyBody: aboutContent.story.body,
+          valuesTitle: aboutContent.values.title,
+          values: aboutContent.values.items,
+        }}
       />
     </div>
   );

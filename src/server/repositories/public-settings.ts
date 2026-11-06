@@ -42,6 +42,12 @@ export type HomeSection = {
   sortOrder: number;
 };
 
+export type AboutPageContent = {
+  hero: { eyebrow: string; title: string; body: string; image: string | null };
+  story: { eyebrow: string; body: string };
+  values: { title: string; items: { title: string; text: string }[] };
+};
+
 export type PublicGalleryItem = {
   id: string;
   url: string;
@@ -176,6 +182,35 @@ export const fallbackSections: Record<HomeSectionKey, Omit<HomeSection, "key">> 
 
 const sectionKeys = Object.keys(fallbackSections) as HomeSectionKey[];
 
+const fallbackAboutValues = [
+  {
+    title: "Hecho a mano",
+    text: "Cada detalle se compone cuidadosamente para lograr piezas delicadas y bien terminadas.",
+  },
+  {
+    title: "Sensibilidad",
+    text: "Pensamos en la ocasión, el estilo y la persona que llevará cada accesorio o regalo.",
+  },
+  {
+    title: "Singularidad",
+    text: "Buscamos que cada pieza aporte un gesto especial sin dejar de sentirse natural.",
+  },
+];
+
+const fallbackAbout: AboutPageContent = {
+  hero: {
+    eyebrow: "Nuestra esencia",
+    title: "Crear un detalle.\nGuardar una memoria.",
+    body: fallbackSettings.businessDescription,
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85",
+  },
+  story: {
+    eyebrow: "Nuestra historia",
+    body: fallbackSections.historia.body,
+  },
+  values: { title: "Lo que nos guía", items: fallbackAboutValues },
+};
+
 export function buildWhatsAppUrl(number: string, message: string) {
   return `https://wa.me/${digits(number)}?text=${encodeURIComponent(message)}`;
 }
@@ -225,11 +260,14 @@ export const getPublicHomeContent = cache(async (): Promise<HomeSection[]> => {
       include: { media: { select: { url: true } } },
     });
     const stored = new Map(rows.map((row) => [row.sectionKey, row]));
+    const sections: HomeSection[] = [];
 
-    return sectionKeys.map((key) => {
+    for (const key of sectionKeys) {
       const row = stored.get(key);
+      if (row?.deletedAt) continue;
+
       const fallback = fallbackSections[key];
-      return {
+      sections.push({
         key,
         eyebrow: row?.subtitle?.trim() || fallback.eyebrow,
         title: row?.title?.trim() || fallback.title,
@@ -240,10 +278,64 @@ export const getPublicHomeContent = cache(async (): Promise<HomeSection[]> => {
         image: row?.media?.url || fallback.image,
         visible: row?.visible ?? fallback.visible,
         sortOrder: row?.sortOrder ?? fallback.sortOrder,
-      };
-    });
+      });
+    }
+
+    return sections;
   } catch {
     return sectionKeys.map((key) => ({ key, ...fallbackSections[key] }));
+  }
+});
+
+export const getPublicAboutContent = cache(async (): Promise<AboutPageContent> => {
+  try {
+    const [rows, settings] = await Promise.all([
+      db.pageContent.findMany({
+        where: { pageKey: "about" },
+        include: { media: { select: { url: true } } },
+      }),
+      getPublicSettings(),
+    ]);
+    const stored = new Map(rows.map((row) => [row.sectionKey, row]));
+    const hero = stored.get("hero");
+    const story = stored.get("story");
+    const values = stored.get("values");
+    let valueItems = fallbackAboutValues;
+
+    if (values?.body) {
+      try {
+        const parsed: unknown = JSON.parse(values.body);
+        if (Array.isArray(parsed)) {
+          const items = parsed.filter((item): item is { title: string; text: string } => (
+            typeof item === "object" && item !== null &&
+            "title" in item && typeof item.title === "string" &&
+            "text" in item && typeof item.text === "string"
+          ));
+          if (items.length) valueItems = items;
+        }
+      } catch {
+        valueItems = fallbackAboutValues;
+      }
+    }
+
+    return {
+      hero: {
+        eyebrow: hero?.deletedAt ? fallbackAbout.hero.eyebrow : hero?.subtitle?.trim() || fallbackAbout.hero.eyebrow,
+        title: hero?.deletedAt ? fallbackAbout.hero.title : hero?.title?.trim() || fallbackAbout.hero.title,
+        body: hero?.deletedAt ? settings.businessDescription : hero?.body?.trim() || settings.businessDescription,
+        image: hero?.deletedAt ? fallbackAbout.hero.image : hero?.media?.url ?? fallbackAbout.hero.image,
+      },
+      story: {
+        eyebrow: story?.deletedAt ? fallbackAbout.story.eyebrow : story?.subtitle?.trim() || fallbackAbout.story.eyebrow,
+        body: story?.deletedAt ? fallbackAbout.story.body : story?.body?.trim() || fallbackAbout.story.body,
+      },
+      values: {
+        title: values?.deletedAt ? fallbackAbout.values.title : values?.title?.trim() || fallbackAbout.values.title,
+        items: values?.deletedAt ? fallbackAbout.values.items : valueItems,
+      },
+    };
+  } catch {
+    return fallbackAbout;
   }
 });
 

@@ -172,20 +172,21 @@ model SiteSettings {
 }
 
 model PageContent {
-  id         String   @id @default(cuid())
-  pageKey    String
-  sectionKey String
-  title      String?
-  subtitle   String?
-  body       String?
+  id              String    @id @default(cuid())
+  pageKey         String
+  sectionKey      String
+  title           String?
+  subtitle        String?
+  body            String?
   ctaLabel        String?
   ctaUrl          String?
   backgroundColor String?
   mediaId         String?
-  visible         Boolean  @default(true)
-  sortOrder  Int      @default(0)
-  updatedAt  DateTime @updatedAt
-  media      Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)
+  visible         Boolean   @default(true)
+  deletedAt       DateTime?
+  sortOrder       Int       @default(0)
+  updatedAt       DateTime  @updatedAt
+  media           Media?    @relation(fields: [mediaId], references: [id], onDelete: SetNull)
 
   @@unique([pageKey, sectionKey])
   @@index([pageKey, visible, sortOrder])

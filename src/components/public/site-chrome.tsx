@@ -174,7 +174,7 @@ export function Footer({ settings }: { settings: PublicSettings }) {
       </div>
       <div className="mx-auto mt-12 flex max-w-[1400px] flex-wrap justify-between gap-3 border-t border-white/10 pt-6 text-[10px] uppercase tracking-[0.18em] text-white/40">
         <span>© {new Date().getFullYear()} {settings.businessName}</span>
-        <span>Hecho a mano con amor en El Salvador</span>
+        <span>{settings.tagline}</span>
       </div>
     </footer>
   );

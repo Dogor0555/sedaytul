@@ -112,6 +112,7 @@ function CatalogSection({
   settings: Awaited<ReturnType<typeof getPublicSettings>>;
   background?: boolean;
 }) {
+  if (!section) return null;
   const cta = sectionCta(section, settings.whatsappNumber, `Hola Seda y Tul, quisiera explorar ${section?.eyebrow?.toLowerCase() ?? "el catálogo"}.`);
   const backgroundColor = section?.backgroundColor ?? (background ? "#FAF9F6" : "#FFFFFF");
   return (
@@ -199,7 +200,7 @@ export default async function Home() {
     <PublicShell>
       <LivePreviewBridge />
       {hero ? (
-        <section data-preview-section="hero" hidden={!hero.visible} style={{ backgroundColor: heroBackground, color: heroIsLight ? "#423A36" : "#F9F6F1" }} className="grid min-h-[calc(100vh-9rem)] border-b border-[#EDE8E2] lg:grid-cols-[44%_56%]">
+        <section data-preview-section="hero" hidden={!hero.visible} style={{ backgroundColor: heroBackground, color: heroIsLight ? "#423A36" : "#F9F6F1", display: hero.visible ? undefined : "none" }} className="grid min-h-[calc(100vh-9rem)] border-b border-[#EDE8E2] lg:grid-cols-[44%_56%]">
           <div className="relative flex flex-col justify-center px-7 py-16 sm:px-14 lg:px-[9%]">
             <div className={`absolute left-8 top-10 h-24 w-24 rounded-full border sm:left-auto sm:right-10 ${heroIsLight ? "border-[#E2DCD4]" : "border-white/30"}`} />
             <Eyebrow light={!heroIsLight} previewField="subtitle">{hero.eyebrow}</Eyebrow>
@@ -235,17 +236,19 @@ export default async function Home() {
 
       <CatalogSection section={regalos} products={gifts} settings={settings} background />
 
-      <section className="mx-auto max-w-[1400px] px-5 py-24 sm:px-8 lg:px-12 lg:py-32">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <Eyebrow>Más que un detalle</Eyebrow>
-          <h2 className="text-4xl sm:text-5xl">Creamos contigo, <i className="font-normal">a tu medida</i></h2>
-          <p className="mt-5 text-sm leading-7 text-[#685B54]">Personalizamos colores, nombres, empaques y mensajes para que cada pieza cuente exactamente la historia que imaginás.</p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <SpecialSection section={personalizados} settings={settings} tone="rose" />
-          <SpecialSection section={corporativos} settings={settings} tone="sand" />
-        </div>
-      </section>
+      {personalizados?.visible || corporativos?.visible ? (
+        <section className="mx-auto max-w-[1400px] px-5 py-24 sm:px-8 lg:px-12 lg:py-32">
+          <div className="mx-auto mb-14 max-w-2xl text-center">
+            <Eyebrow>Más que un detalle</Eyebrow>
+            <h2 className="text-4xl sm:text-5xl">Creamos contigo, <i className="font-normal">a tu medida</i></h2>
+            <p className="mt-5 text-sm leading-7 text-[#685B54]">Personalizamos colores, nombres, empaques y mensajes para que cada pieza cuente exactamente la historia que imaginás.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <SpecialSection section={personalizados} settings={settings} tone="rose" />
+            <SpecialSection section={corporativos} settings={settings} tone="sand" />
+          </div>
+        </section>
+      ) : null}
 
       {gallery.length ? (
         <section className="mx-auto max-w-[1400px] px-5 pb-24 sm:px-8 lg:px-12 lg:pb-32">

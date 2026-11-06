@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
-import { Eye, EyeOff, FileText, Save } from "lucide-react";
+import { useActionState, useState } from "react";
+import { Eye, EyeOff, FileText, Save, Trash2 } from "lucide-react";
 import { Panel, inputClass, labelClass, primaryButton } from "@/components/admin/admin-ui";
 import { SingleImageUpload, type UploadedImage } from "@/components/admin/single-image-upload";
-import { saveContentSection, type ContentActionState } from "./actions";
+import { deleteContentSection, saveContentSection, type ContentActionState } from "./actions";
 
 export type ContentSection = {
   key: "hero" | "accesorios" | "regalos" | "personalizados" | "corporativos" | "historia" | "tips" | "pagos" | "contacto";
@@ -71,8 +71,29 @@ function ColorField({
   );
 }
 
-export function ContentSectionForm({ section, onChange }: { section: ContentSection; onChange: (values: Partial<ContentSection>) => void }) {
+export function ContentSectionForm({ section, onChange, onDelete }: { section: ContentSection; onChange: (values: Partial<ContentSection>) => void; onDelete: (key: ContentSection["key"]) => void }) {
   const [state, formAction, pending] = useActionState(saveContentSection, initialState);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (!window.confirm(`¿Eliminar la sección "${section.label}" del sitio? Podrás restaurarla desde el panel de secciones eliminadas.`)) return;
+
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      const result = await deleteContentSection(section.key);
+      if (result.status === "error") {
+        setDeleteError(result.message ?? "No se pudo eliminar la sección.");
+        return;
+      }
+      onDelete(section.key);
+    } catch {
+      setDeleteError("Ocurrió un error al eliminar la sección.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <Panel className="overflow-hidden">
@@ -104,8 +125,15 @@ export function ContentSectionForm({ section, onChange }: { section: ContentSect
           </label>
         </div>
         <div className="flex flex-col gap-3 border-t border-[#ece5e1] bg-[#fcfaf8] p-4 sm:flex-row sm:items-center sm:justify-end sm:px-6">
-          {state.message && <p role="status" className={`flex-1 text-sm ${state.status === "error" ? "text-red-700" : "text-[#52664e]"}`}>{state.message}</p>}
-          <button type="submit" disabled={pending} className={`${primaryButton} w-full disabled:cursor-wait disabled:opacity-60 sm:w-auto`}><Save className="size-4" />{pending ? "Guardando..." : "Guardar sección"}</button>
+          <button type="button" onClick={handleDelete} disabled={pending || deleting} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#e5c9c4] bg-white px-4 py-2 text-sm font-semibold text-[#9a4038] transition hover:border-[#d9aaa4] hover:bg-[#fff7f6] disabled:cursor-wait disabled:opacity-60 sm:mr-auto">
+            <Trash2 className="size-4" />{deleting ? "Eliminando..." : "Eliminar sección"}
+          </button>
+          {(deleteError || state.message) && (
+            <p role="status" className={`flex-1 text-sm ${deleteError || state.status === "error" ? "text-red-700" : "text-[#52664e]"}`}>
+              {deleteError ?? state.message}
+            </p>
+          )}
+          <button type="submit" disabled={pending || deleting} className={`${primaryButton} w-full disabled:cursor-wait disabled:opacity-60 sm:w-auto`}><Save className="size-4" />{pending ? "Guardando..." : "Guardar sección"}</button>
         </div>
       </form>
     </Panel>

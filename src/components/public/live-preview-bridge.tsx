@@ -51,6 +51,7 @@ export function LivePreviewBridge() {
         if (!root) continue;
 
         root.hidden = !section.visible;
+        root.style.display = section.visible ? "" : "none";
         root.style.backgroundColor = section.backgroundColor || "";
         const eyebrow = root.querySelector<HTMLElement>('[data-preview-field="subtitle"]');
         const title = root.querySelector<HTMLElement>('[data-preview-field="title"]');
