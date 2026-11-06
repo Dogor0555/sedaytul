@@ -95,11 +95,11 @@ export function Header({
         </div>
       </div>
 
-      <nav aria-label="Categorías principales" className="border-t border-[#EDE8E2] bg-[#FAF9F6]">
+      <nav aria-label="Categorías principales" className="border-t border-[#EDE8E2] bg-white">
         <div className="mx-auto flex max-w-[1400px] items-center gap-6 overflow-x-auto px-4 py-3 text-[9px] uppercase tracking-[0.2em] [scrollbar-width:none] sm:justify-center sm:px-8 lg:px-12 [&::-webkit-scrollbar]:hidden">
-          <Link href="/productos" className="shrink-0 pb-1 text-[#9B7654] transition-colors hover:text-[#423A36]">Todos</Link>
+          <Link href="/productos" className="shrink-0 pb-1 text-[#222222] transition-colors hover:text-[#222222]">Todos</Link>
           {categories.map((category) => (
-            <Link key={category.slug} href={`/productos?categoria=${category.slug}`} className="shrink-0 pb-1 transition-colors hover:text-[#9B7654]">
+            <Link key={category.slug} href={`/productos?categoria=${category.slug}`} className="shrink-0 pb-1 transition-colors hover:text-[#222222]">
               {category.name}
             </Link>
           ))}

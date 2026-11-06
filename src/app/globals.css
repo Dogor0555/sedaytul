@@ -60,7 +60,7 @@ textarea {
   [class~="bg-[#F2E6E0]"], [class~="bg-[#FAF8F4]"], [class~="bg-[#FAF8F6]"],
   [class~="bg-[#faf8f6]"], [class~="bg-[#f8f6f3]"], [class~="bg-[#faf5f1]"]
 ) {
-  background-color: var(--beige-calido) !important;
+  background-color: var(--blanco) !important;
 }
 
 :where([class~="bg-[#F9F6F1]"]) {

@@ -193,7 +193,7 @@ export default async function Home() {
   const paymentMethods = settings.paymentMethods.split("\n").map((item) => item.trim()).filter(Boolean);
   const heroBackground = hero?.backgroundColor ?? "#FFFFFF";
   const heroIsLight = isLightColor(heroBackground);
-  const historiaBackground = historia?.backgroundColor ?? "#423A36";
+  const historiaBackground = historia?.backgroundColor ?? "#FFFFFF";
   const historiaIsLight = isLightColor(historiaBackground);
 
   return (

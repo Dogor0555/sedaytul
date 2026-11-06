@@ -60,20 +60,20 @@ export default async function AboutPage() {
         </span>
       </section>
 
-      <section id="valores" className="bg-[#423A36] px-5 py-24 text-[#F9F6F1] sm:px-8">
+      <section id="valores" className="bg-white px-5 py-24 text-[#222222] sm:px-8">
         <div className="mx-auto max-w-[1200px]">
           <div className="text-center">
-            <Eyebrow light>Nuestra manera de crear</Eyebrow>
+            <Eyebrow>Nuestra manera de crear</Eyebrow>
             <h2 className="text-5xl">{about.values.title}</h2>
           </div>
-          <div className="mt-16 grid gap-px bg-white/15 md:grid-cols-3">
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
             {about.values.items.map(({ title, text }, index) => {
               const Icon = valueIcons[index % valueIcons.length];
               return (
-              <article key={`${title}-${index}`} className="bg-[#423A36] p-10">
+              <article key={`${title}-${index}`} className="border border-[#D8C3A5] bg-white p-10">
                 <Icon strokeWidth={1} className="text-[#C7AD8C]" />
                 <h3 className="mt-8 text-2xl">{title}</h3>
-                <p className="mt-4 text-sm leading-7 text-white/60">{text}</p>
+                <p className="mt-4 text-sm leading-7 text-[#222222]/70">{text}</p>
               </article>
               );
             })}
