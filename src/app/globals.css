@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f9f6f1;
+  --background: #ffffff;
   --foreground: #423a36;
 }
 
@@ -27,6 +27,6 @@ textarea {
 }
 
 ::selection {
-  background: #e8d6cf;
+  background: #efe9df;
   color: #423a36;
 }

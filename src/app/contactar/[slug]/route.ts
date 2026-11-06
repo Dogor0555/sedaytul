@@ -13,6 +13,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
   await db.contactEvent.create({
     data: { productId: product.id, sourcePage: `/productos/${slug}`, eventType: "WHATSAPP_CLICK" },
   });
-  const message = `Hola, vi el producto ${product.name} en la página de Seda y Tul y quisiera conocer su precio y disponibilidad.`;
-  redirect(`https://wa.me/${settings?.whatsappNumber ?? demoWhatsAppNumber}?text=${encodeURIComponent(message)}`);
+  const message = `Hola Seda y Tul, quisiera consultar por "${product.name}". ¿Me pueden ayudar con precio, disponibilidad y entrega?`;
+  const number = (settings?.whatsappNumber ?? demoWhatsAppNumber).replace(/\D/g, "");
+  redirect(`https://wa.me/${number}?text=${encodeURIComponent(message)}`);
 }

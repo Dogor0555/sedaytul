@@ -11,9 +11,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Nosotros",
-  description:
-    "Conocé la esencia artesanal de Seda y Tul, un emprendimiento salvadoreño de accesorios para celebraciones.",
+  title: "Conócenos",
+  description: "Conocé la esencia artesanal de Seda y Tul, un emprendimiento salvadoreño de accesorios y regalos para celebraciones.",
 };
 
 export default async function AboutPage() {
@@ -32,7 +31,7 @@ export default async function AboutPage() {
     {
       icon: Sprout,
       title: "Sensibilidad",
-      text: "Pensamos en la ocasión, el estilo y la persona que llevará cada accesorio.",
+      text: "Pensamos en la ocasión, el estilo y la persona que llevará cada accesorio o regalo.",
     },
     {
       icon: Sparkles,
@@ -43,7 +42,7 @@ export default async function AboutPage() {
 
   return (
     <PublicShell>
-      <section className="grid bg-[#E8D6CF] lg:grid-cols-2">
+      <section className="grid border-b border-[#EDE8E2] bg-white lg:grid-cols-2">
         <div className="flex items-center px-7 py-24 sm:px-16 lg:px-[12%]">
           <div>
             <Eyebrow>Nuestra esencia</Eyebrow>
@@ -55,10 +54,13 @@ export default async function AboutPage() {
             <p className="mt-8 max-w-lg text-base leading-8 text-[#685B54]">
               {settings.businessDescription}
             </p>
+            <p className="mt-4 text-[10px] uppercase tracking-[0.26em] text-[#9B7654]">
+              {settings.tagline}
+            </p>
           </div>
         </div>
         <img
-          src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85"
+          src={historia?.image ?? "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1400&q=85"}
           alt="Detalle de una pieza artesanal delicada"
           className="h-full min-h-[580px] w-full object-cover"
         />
@@ -67,15 +69,14 @@ export default async function AboutPage() {
       <section className="mx-auto max-w-5xl px-5 py-24 text-center sm:px-8 lg:py-32">
         <Eyebrow>{historia?.eyebrow ?? "Nuestra historia"}</Eyebrow>
         <p className="text-3xl leading-relaxed sm:text-5xl sm:leading-snug">
-          {historia?.body ??
-            "“Creemos en los detalles que acompañan sin imponerse y convierten una celebración en un recuerdo muy propio.”"}
+          {historia?.body ?? "Creemos en los detalles que acompañan sin imponerse y convierten una celebración en un recuerdo muy propio."}
         </p>
         <span className="mt-8 block text-[10px] uppercase tracking-[0.3em] text-[#9B7654]">
           Esencia {settings.businessName}
         </span>
       </section>
 
-      <section className="bg-[#423A36] px-5 py-24 text-[#F9F6F1] sm:px-8">
+      <section id="valores" className="bg-[#423A36] px-5 py-24 text-[#F9F6F1] sm:px-8">
         <div className="mx-auto max-w-[1200px]">
           <div className="text-center">
             <Eyebrow light>Nuestra manera de crear</Eyebrow>

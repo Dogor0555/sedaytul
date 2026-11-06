@@ -24,6 +24,16 @@ enum Availability {
   UNAVAILABLE
 }
 
+enum ProductType {
+  ACCESSORY
+  GIFT
+}
+
+enum PricingMode {
+  FIXED
+  QUOTE
+}
+
 enum ContactEventType {
   WHATSAPP_CLICK
 }
@@ -68,7 +78,11 @@ model Product {
   referenceCode    String?        @unique
   shortDescription String?
   description      String?
+  productType      ProductType    @default(ACCESSORY)
+  personalization  String?
+  presentation     String?
   price            Decimal?       @db.Decimal(12, 2)
+  pricingMode      PricingMode    @default(QUOTE)
   showPrice        Boolean        @default(false)
   availability     Availability   @default(AVAILABLE)
   status           ProductStatus  @default(DRAFT)
@@ -135,6 +149,7 @@ model GalleryItem {
 model SiteSettings {
   id                  String   @id @default("main")
   businessName        String   @default("Seda y Tul")
+  tagline             String?
   logoMediaId         String?
   whatsappNumber      String?
   facebookUrl         String?
@@ -143,6 +158,8 @@ model SiteSettings {
   businessHours       String?
   businessDescription String?
   footerText          String?
+  paymentMethods      String?
+  paymentInstructions String?
   shareMediaId        String?
   seoTitle            String?
   seoDescription      String?
@@ -161,8 +178,11 @@ model PageContent {
   title      String?
   subtitle   String?
   body       String?
-  mediaId    String?
-  visible    Boolean  @default(true)
+  ctaLabel        String?
+  ctaUrl          String?
+  backgroundColor String?
+  mediaId         String?
+  visible         Boolean  @default(true)
   sortOrder  Int      @default(0)
   updatedAt  DateTime @updatedAt
   media      Media?   @relation(fields: [mediaId], references: [id], onDelete: SetNull)

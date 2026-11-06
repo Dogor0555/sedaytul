@@ -10,6 +10,8 @@ const optionalUrl = z.union([z.literal(""), z.string().trim().url("Ingresa una U
 
 const settingsSchema = z.object({
   businessName: z.string().trim().min(2, "Ingresa el nombre comercial.").max(120),
+  tagline: optionalText(160),
+  logoMediaId: z.string().trim().optional(),
   whatsappNumber: z.union([
     z.literal(""),
     z.string().trim().regex(/^\d{7,15}$/, "Usa entre 7 y 15 dígitos, incluido el código de país, sin + ni espacios."),
@@ -20,6 +22,8 @@ const settingsSchema = z.object({
   businessHours: optionalText(300),
   businessDescription: optionalText(1000),
   footerText: optionalText(300),
+  paymentMethods: optionalText(1000),
+  paymentInstructions: optionalText(1000),
   seoTitle: optionalText(120),
   seoDescription: optionalText(300),
 });
@@ -49,6 +53,8 @@ export async function saveSettings(
   const emptyToNull = (value: string | undefined) => value || null;
   const data = {
     businessName: parsed.data.businessName,
+    tagline: emptyToNull(parsed.data.tagline),
+    logoMediaId: emptyToNull(parsed.data.logoMediaId),
     whatsappNumber: emptyToNull(parsed.data.whatsappNumber),
     facebookUrl: emptyToNull(parsed.data.facebookUrl),
     instagramUrl: emptyToNull(parsed.data.instagramUrl),
@@ -56,6 +62,8 @@ export async function saveSettings(
     businessHours: emptyToNull(parsed.data.businessHours),
     businessDescription: emptyToNull(parsed.data.businessDescription),
     footerText: emptyToNull(parsed.data.footerText),
+    paymentMethods: emptyToNull(parsed.data.paymentMethods),
+    paymentInstructions: emptyToNull(parsed.data.paymentInstructions),
     seoTitle: emptyToNull(parsed.data.seoTitle),
     seoDescription: emptyToNull(parsed.data.seoDescription),
   };

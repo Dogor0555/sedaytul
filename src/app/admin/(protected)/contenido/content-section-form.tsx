@@ -7,12 +7,15 @@ import { SingleImageUpload, type UploadedImage } from "@/components/admin/single
 import { saveContentSection, type ContentActionState } from "./actions";
 
 export type ContentSection = {
-  key: "hero" | "artesanal" | "historia" | "contacto";
+  key: "hero" | "accesorios" | "regalos" | "personalizados" | "corporativos" | "historia" | "tips" | "pagos" | "contacto";
   label: string;
   description: string;
   title: string;
   subtitle: string;
   body: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  backgroundColor: string;
   image: UploadedImage | null;
   visible: boolean;
   sortOrder: number;
@@ -22,6 +25,50 @@ const initialState: ContentActionState = { status: "idle" };
 
 function ErrorMessage({ error }: { error?: string }) {
   return error ? <span className="mt-1.5 block text-xs text-red-700">{error}</span> : null;
+}
+
+function ColorField({
+  value,
+  onChange,
+  error,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+}) {
+  const safeColor = /^#[0-9a-fA-F]{6}$/.test(value) ? value : "#FFFFFF";
+
+  return (
+    <div className="sm:col-span-2">
+      <span className={labelClass}>Color de fondo de la sección</span>
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="color"
+          value={safeColor}
+          onChange={(event) => onChange(event.target.value.toUpperCase())}
+          className="size-11 cursor-pointer rounded-xl border border-[#ddd4cf] bg-white p-1"
+          aria-label="Elegir color de fondo"
+        />
+        <input
+          name="backgroundColor"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          maxLength={7}
+          placeholder="#FFFFFF"
+          className={`${inputClass} max-w-36 uppercase`}
+        />
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          className="rounded-xl border border-[#ddd4cf] px-3 py-2.5 text-xs font-semibold text-[#7a6d68] hover:bg-[#faf7f5]"
+        >
+          Color automático
+        </button>
+        <span className="text-[11px] text-[#978a85]">Elegí tonos claros para conservar la legibilidad.</span>
+      </div>
+      <ErrorMessage error={error} />
+    </div>
+  );
 }
 
 export function ContentSectionForm({ section, onChange }: { section: ContentSection; onChange: (values: Partial<ContentSection>) => void }) {
@@ -39,17 +86,17 @@ export function ContentSectionForm({ section, onChange }: { section: ContentSect
           <label><span className={labelClass}>Título</span><input name="title" maxLength={200} className={inputClass} value={section.title} onChange={(event) => onChange({ title: event.target.value })} /><ErrorMessage error={state.errors?.title} /></label>
           <label><span className={labelClass}>Subtítulo</span><input name="subtitle" maxLength={300} className={inputClass} value={section.subtitle} onChange={(event) => onChange({ subtitle: event.target.value })} /><ErrorMessage error={state.errors?.subtitle} /></label>
           <label className="sm:col-span-2"><span className={labelClass}>Contenido</span><textarea name="body" maxLength={5000} className={`${inputClass} min-h-32 py-3 leading-6`} value={section.body} onChange={(event) => onChange({ body: event.target.value })} /><ErrorMessage error={state.errors?.body} /></label>
-          {section.key === "hero" || section.key === "artesanal" ? (
-            <div className="sm:col-span-2">
-              <SingleImageUpload
-                name="mediaId"
-                label={section.key === "hero" ? "Imagen principal de portada" : "Imagen del trabajo artesanal"}
-                current={section.image}
-                allowRemove={false}
-                onChange={(image) => onChange({ image })}
-              />
-            </div>
-          ) : <input type="hidden" name="mediaId" value="" />}
+          <label><span className={labelClass}>Texto del botón</span><input name="ctaLabel" maxLength={80} className={inputClass} value={section.ctaLabel} onChange={(event) => onChange({ ctaLabel: event.target.value })} placeholder="Ej. Explorar accesorios" /><ErrorMessage error={state.errors?.ctaLabel} /></label>
+          <label><span className={labelClass}>Enlace del botón</span><input name="ctaUrl" maxLength={500} className={inputClass} value={section.ctaUrl} onChange={(event) => onChange({ ctaUrl: event.target.value })} placeholder="/productos o whatsapp" /><span className="mt-1.5 block text-[11px] text-[#978a85]">Usa <strong>whatsapp</strong> para abrir una conversación.</span><ErrorMessage error={state.errors?.ctaUrl} /></label>
+          <ColorField value={section.backgroundColor} onChange={(backgroundColor) => onChange({ backgroundColor })} error={state.errors?.backgroundColor} />
+          <div className="sm:col-span-2">
+            <SingleImageUpload
+              name="mediaId"
+              label="Imagen de la sección (opcional)"
+              current={section.image}
+              onChange={(image) => onChange({ image })}
+            />
+          </div>
           <label><span className={labelClass}>Orden</span><input name="sortOrder" type="number" min={0} max={999} step={1} required className={inputClass} value={section.sortOrder} onChange={(event) => onChange({ sortOrder: event.target.valueAsNumber || 0 })} /><ErrorMessage error={state.errors?.sortOrder} /></label>
           <label className="flex min-h-11 cursor-pointer items-center gap-3 self-end rounded-xl border border-[#ddd4cf] px-3.5 text-sm font-semibold text-[#4d403d]">
             <input name="visible" type="checkbox" checked={section.visible} onChange={(event) => onChange({ visible: event.target.checked })} className="size-4 accent-[#956762]" />

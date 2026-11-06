@@ -11,7 +11,11 @@ type ProductValues = {
   referenceCode: string | null;
   shortDescription: string | null;
   description: string | null;
+  productType: "ACCESSORY" | "GIFT";
+  personalization: string | null;
+  presentation: string | null;
   price: string | null;
+  pricingMode: "FIXED" | "QUOTE";
   status: "DRAFT" | "PUBLISHED" | "HIDDEN";
   availability: "AVAILABLE" | "MADE_TO_ORDER" | "UNAVAILABLE";
   showPrice: boolean;
@@ -48,8 +52,11 @@ export function ProductForm({
               <label><span className={labelClass}>Descripción corta</span><input name="shortDescription" className={inputClass} maxLength={300} defaultValue={product?.shortDescription ?? ""} placeholder="Resumen para las tarjetas del catálogo" /></label>
               <label><span className={labelClass}>Descripción completa</span><textarea name="description" maxLength={5000} className={`${inputClass} min-h-32 resize-y py-3`} defaultValue={product?.description ?? ""} placeholder="Describe materiales, elaboración artesanal y detalles especiales..." /></label>
               <div className="grid gap-4 sm:grid-cols-2">
+                <label><span className={labelClass}>Tipo de producto</span><select name="productType" className={`${inputClass} appearance-none`} defaultValue={product?.productType ?? "ACCESSORY"}><option value="ACCESSORY">Accesorio</option><option value="GIFT">Regalo</option></select></label>
                 <label><span className={labelClass}>Categoría</span><span className="relative block"><select name="categoryId" required className={`${inputClass} appearance-none pr-9`} defaultValue={product?.categoryId ?? ""}><option value="" disabled>Selecciona una categoría</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-[#9b8d88]" /></span></label>
                 <label><span className={labelClass}>Código de referencia</span><input name="referenceCode" maxLength={50} className={inputClass} defaultValue={product?.referenceCode ?? ""} placeholder="ST-025" /></label>
+                <label><span className={labelClass}>Opciones de personalización</span><input name="personalization" maxLength={500} className={inputClass} defaultValue={product?.personalization ?? ""} placeholder="Colores, nombres, iniciales, empaque..." /></label>
+                <label className="sm:col-span-2"><span className={labelClass}>Tipo de presentación <span className="font-normal text-[#978a85]">(para regalos)</span></span><input name="presentation" maxLength={500} className={inputClass} defaultValue={product?.presentation ?? ""} placeholder="Caja de regalo, tarjeta, envoltura..." /></label>
               </div>
             </div>
           </Panel>
@@ -64,8 +71,9 @@ export function ProductForm({
           <Panel className="p-5">
             <h2 className="font-serif text-lg text-[#3e312f]">Precio y disponibilidad</h2>
             <div className="mt-5 space-y-4">
-              <label><span className={labelClass}>Precio <span className="font-normal text-[#978a85]">(opcional)</span></span><div className="relative"><span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#8e817c]">$</span><input name="price" type="number" min="0" max="9999999999.99" step="0.01" className={`${inputClass} pl-8`} defaultValue={product?.price ?? ""} placeholder="0.00" /><span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#9b8d88]">USD</span></div></label>
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#faf7f5] p-3"><input name="showPrice" type="checkbox" defaultChecked={product?.showPrice} className="mt-0.5 size-4 accent-[#92635e]" /><span><strong className="block text-xs text-[#50423f]">Mostrar precio en el catálogo</strong><span className="mt-1 block text-[11px] leading-4 text-[#8f827d]">Solo se mostrará cuando exista un precio.</span></span></label>
+              <label><span className={labelClass}>Modalidad de precio</span><select name="pricingMode" className={`${inputClass} appearance-none`} defaultValue={product?.pricingMode ?? "QUOTE"}><option value="FIXED">Precio fijo (se puede pagar desde el carrito)</option><option value="QUOTE">Solo cotización por WhatsApp</option></select><span className="mt-1.5 block text-[11px] text-[#978a85]">Los productos a cotización no suman al total y se envían por WhatsApp.</span></label>
+              <label><span className={labelClass}>Precio <span className="font-normal text-[#978a85]">(para precio fijo)</span></span><div className="relative"><span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#8e817c]">$</span><input name="price" type="number" min="0" max="9999999999.99" step="0.01" className={`${inputClass} pl-8`} defaultValue={product?.price ?? ""} placeholder="0.00" /><span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#9b8d88]">USD</span></div></label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-[#faf7f5] p-3"><input name="showPrice" type="checkbox" defaultChecked={product?.showPrice} className="mt-0.5 size-4 accent-[#92635e]" /><span><strong className="block text-xs text-[#50423f]">Mostrar precio en el catálogo</strong><span className="mt-1 block text-[11px] leading-4 text-[#8f827d]">Se usa solo en productos con precio fijo.</span></span></label>
               <label><span className={labelClass}>Disponibilidad</span><select name="availability" className={`${inputClass} appearance-none`} defaultValue={product?.availability ?? "AVAILABLE"}><option value="AVAILABLE">Disponible</option><option value="MADE_TO_ORDER">Por encargo</option><option value="UNAVAILABLE">No disponible</option></select></label>
               <label><span className={labelClass}>Estado</span><select name="status" className={`${inputClass} appearance-none`} defaultValue={product?.status ?? "DRAFT"}><option value="DRAFT">Borrador</option><option value="PUBLISHED">Publicado</option><option value="HIDDEN">Oculto</option></select></label>
             </div>

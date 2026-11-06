@@ -5,7 +5,10 @@ import { SettingsForm } from "./settings-form";
 
 export default async function SettingsPage() {
   const user = await requireUser();
-  const settings = await db.siteSettings.findUnique({ where: { id: "main" } });
+  const settings = await db.siteSettings.findUnique({
+    where: { id: "main" },
+    include: { logo: { select: { id: true, url: true } } },
+  });
 
   return (
     <div className="space-y-7">
@@ -17,6 +20,8 @@ export default async function SettingsPage() {
       <SettingsForm
         settings={{
           businessName: settings?.businessName ?? "Seda y Tul",
+          tagline: settings?.tagline ?? "",
+          logo: settings?.logo ?? null,
           whatsappNumber: settings?.whatsappNumber ?? "",
           facebookUrl: settings?.facebookUrl ?? "",
           instagramUrl: settings?.instagramUrl ?? "",
@@ -24,6 +29,8 @@ export default async function SettingsPage() {
           businessHours: settings?.businessHours ?? "",
           businessDescription: settings?.businessDescription ?? "",
           footerText: settings?.footerText ?? "",
+          paymentMethods: settings?.paymentMethods ?? "",
+          paymentInstructions: settings?.paymentInstructions ?? "",
           seoTitle: settings?.seoTitle ?? "",
           seoDescription: settings?.seoDescription ?? "",
         }}

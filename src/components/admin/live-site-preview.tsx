@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export type LivePreviewSection = {
-  key: "hero" | "artesanal" | "historia" | "contacto";
+  key: "hero" | "accesorios" | "regalos" | "personalizados" | "corporativos" | "historia" | "tips" | "pagos" | "contacto";
   title: string;
   subtitle: string;
   body: string;
+  backgroundColor: string;
   image: string | null;
   visible: boolean;
   sortOrder: number;

@@ -1,6 +1,6 @@
 "use server";
 
-import { Availability, Prisma, ProductStatus } from "@prisma/client";
+import { Availability, Prisma, PricingMode, ProductStatus, ProductType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -21,10 +21,14 @@ const productSchema = z.object({
   referenceCode: optionalText(50),
   shortDescription: optionalText(300),
   description: optionalText(5000),
+  productType: z.enum(ProductType),
+  personalization: optionalText(500),
+  presentation: optionalText(500),
   price: z.preprocess(
     (value) => value === null || value === "" ? null : value,
     z.coerce.number().finite().min(0).max(9_999_999_999.99).nullable(),
   ),
+  pricingMode: z.enum(PricingMode),
   status: z.enum(ProductStatus),
   availability: z.enum(Availability),
   showPrice: z.boolean(),
@@ -49,13 +53,25 @@ function productInput(formData: FormData) {
     referenceCode: formData.get("referenceCode"),
     shortDescription: formData.get("shortDescription"),
     description: formData.get("description"),
+    productType: formData.get("productType"),
+    personalization: formData.get("personalization"),
+    presentation: formData.get("presentation"),
     price: formData.get("price"),
+    pricingMode: formData.get("pricingMode"),
     status: formData.get("status"),
     availability: formData.get("availability"),
     showPrice: formData.get("showPrice") === "on",
     featured: formData.get("featured") === "on",
     mediaIds: [...new Set(formData.getAll("mediaIds").map(String).filter(Boolean))],
   });
+}
+
+function productData(formData: FormData) {
+  const { mediaIds, ...data } = productInput(formData);
+  return {
+    mediaIds,
+    data: data.pricingMode === "QUOTE" ? { ...data, price: null, showPrice: false } : data,
+  };
 }
 
 function categoryInput(formData: FormData) {
@@ -97,9 +113,8 @@ export async function logout() {
 
 export async function createProduct(formData: FormData) {
   const user = await requireUser();
-  const parsed = productInput(formData);
-  const { mediaIds, ...data } = parsed;
-  const slug = await uniqueSlug("product", parsed.name);
+  const { mediaIds, data } = productData(formData);
+  const slug = await uniqueSlug("product", data.name);
 
   await db.$transaction(async (tx) => {
     const product = await tx.product.create({
@@ -123,10 +138,9 @@ export async function createProduct(formData: FormData) {
 export async function updateProduct(productId: string, formData: FormData) {
   const user = await requireUser();
   const id = idSchema.parse(productId);
-  const parsed = productInput(formData);
-  const { mediaIds, ...data } = parsed;
+  const { mediaIds, data } = productData(formData);
   const current = await db.product.findUniqueOrThrow({ where: { id }, select: { slug: true } });
-  const slug = await uniqueSlug("product", parsed.name, id);
+  const slug = await uniqueSlug("product", data.name, id);
 
   await db.$transaction(async (tx) => {
     await tx.product.update({ where: { id }, data: { ...data, slug } });

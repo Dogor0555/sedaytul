@@ -15,8 +15,8 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Seda y Tul", template: "%s | Seda y Tul" },
-  description: "Accesorios artesanales para novias, bautizos, primeras comuniones y ocasiones especiales.",
+  title: { default: "Seda y Tul | Accesorios y regalos personalizados", template: "%s | Seda y Tul" },
+  description: "Accesorios y regalos personalizados hechos a mano en El Salvador. Envíos nacionales e internacionales para cada celebración.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 
 type PreviewSection = {
-  key: "hero" | "artesanal" | "historia" | "contacto";
+  key: "hero" | "accesorios" | "regalos" | "personalizados" | "corporativos" | "historia" | "tips" | "pagos" | "contacto";
   title: string;
   subtitle: string;
   body: string;
+  backgroundColor: string;
   image: string | null;
   visible: boolean;
   sortOrder: number;
@@ -50,6 +51,7 @@ export function LivePreviewBridge() {
         if (!root) continue;
 
         root.hidden = !section.visible;
+        root.style.backgroundColor = section.backgroundColor || "";
         const eyebrow = root.querySelector<HTMLElement>('[data-preview-field="subtitle"]');
         const title = root.querySelector<HTMLElement>('[data-preview-field="title"]');
         const body = root.querySelector<HTMLElement>('[data-preview-field="body"]');
@@ -61,16 +63,6 @@ export function LivePreviewBridge() {
         if (image && section.image) image.src = section.image;
       }
 
-      const orderedMiddleSections = event.data.sections
-        .filter((section) => section.key === "artesanal" || section.key === "historia")
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((section) => document.querySelector<HTMLElement>(`[data-preview-section="${section.key}"]`))
-        .filter((section): section is HTMLElement => Boolean(section));
-
-      if (orderedMiddleSections.length === 2) {
-        const [first, second] = orderedMiddleSections;
-        if (first.parentElement === second.parentElement) second.before(first);
-      }
     }
 
     window.addEventListener("message", handleMessage);

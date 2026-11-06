@@ -1,12 +1,15 @@
 "use client";
 
 import { useActionState } from "react";
-import { AtSign, MapPin, Save, Search, Store } from "lucide-react";
+import { AtSign, CreditCard, MapPin, Save, Search, Store } from "lucide-react";
 import { Panel, inputClass, labelClass, primaryButton } from "@/components/admin/admin-ui";
+import { SingleImageUpload, type UploadedImage } from "@/components/admin/single-image-upload";
 import { saveSettings, type SettingsActionState } from "./actions";
 
 type Settings = {
   businessName: string;
+  tagline: string;
+  logo: UploadedImage | null;
   whatsappNumber: string;
   facebookUrl: string;
   instagramUrl: string;
@@ -14,6 +17,8 @@ type Settings = {
   businessHours: string;
   businessDescription: string;
   footerText: string;
+  paymentMethods: string;
+  paymentInstructions: string;
   seoTitle: string;
   seoDescription: string;
 };
@@ -34,8 +39,13 @@ export function SettingsForm({ settings }: { settings: Settings }) {
           <span className="grid size-10 place-items-center rounded-xl bg-[#f1e5df] text-[#89605b]"><Store className="size-[18px]" /></span>
           <div><h2 className="font-serif text-xl text-[#3e312f]">Información de la marca</h2><p className="text-xs text-[#8e817d]">Datos visibles en el sitio y el pie de página.</p></div>
         </div>
+        <div className="mb-6">
+          <SingleImageUpload name="logoMediaId" label="Logo del sitio" current={settings.logo} />
+          <p className="mt-2 text-[11px] text-[#978a85]">Se muestra en el encabezado y pie de página. Si no subes un logo, se usa el nombre comercial.</p>
+        </div>
         <div className="grid gap-5 sm:grid-cols-2">
           <label><span className={labelClass}>Nombre comercial</span><input name="businessName" required maxLength={120} className={inputClass} defaultValue={settings.businessName} /><ErrorMessage error={state.errors?.businessName} /></label>
+          <label><span className={labelClass}>Frase de la marca</span><input name="tagline" maxLength={160} className={inputClass} defaultValue={settings.tagline} placeholder="Hecho a mano con amor en El Salvador" /><span className="mt-1.5 block text-[11px] text-[#978a85]">Se muestra debajo del logo en el encabezado.</span><ErrorMessage error={state.errors?.tagline} /></label>
           <label><span className={labelClass}>WhatsApp internacional</span><input name="whatsappNumber" inputMode="numeric" autoComplete="tel" maxLength={15} placeholder="50370000000" className={inputClass} defaultValue={settings.whatsappNumber} /><span className="mt-1.5 block text-[11px] text-[#978a85]">Código de país y número, solo dígitos.</span><ErrorMessage error={state.errors?.whatsappNumber} /></label>
           <label className="sm:col-span-2"><span className={labelClass}>Descripción del negocio</span><textarea name="businessDescription" maxLength={1000} className={`${inputClass} min-h-28 py-3`} defaultValue={settings.businessDescription} /><ErrorMessage error={state.errors?.businessDescription} /></label>
           <label><span className={labelClass}>Dirección</span><span className="relative block"><MapPin className="absolute left-3.5 top-3.5 size-4 text-[#9b8d88]" /><textarea name="address" maxLength={300} className={`${inputClass} min-h-24 py-3 pl-10`} defaultValue={settings.address} /></span><ErrorMessage error={state.errors?.address} /></label>
@@ -49,6 +59,14 @@ export function SettingsForm({ settings }: { settings: Settings }) {
         <div className="grid gap-5 sm:grid-cols-2">
           <label><span className={labelClass}>URL de Facebook</span><input name="facebookUrl" type="url" placeholder="https://facebook.com/..." className={inputClass} defaultValue={settings.facebookUrl} /><ErrorMessage error={state.errors?.facebookUrl} /></label>
           <label><span className={labelClass}>URL de Instagram</span><input name="instagramUrl" type="url" placeholder="https://instagram.com/..." className={inputClass} defaultValue={settings.instagramUrl} /><ErrorMessage error={state.errors?.instagramUrl} /></label>
+        </div>
+      </Panel>
+
+      <Panel className="p-5 sm:p-7">
+        <div className="mb-6 flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-[#f1e9dd] text-[#8a7049]"><CreditCard className="size-[18px]" /></span><div><h2 className="font-serif text-xl text-[#3e312f]">Formas de pago y pedidos</h2><p className="text-xs text-[#8e817d]">Métodos disponibles e indicaciones para concretar una consulta.</p></div></div>
+        <div className="grid gap-5">
+          <label><span className={labelClass}>Métodos de pago</span><textarea name="paymentMethods" maxLength={1000} className={`${inputClass} min-h-28 py-3`} defaultValue={settings.paymentMethods} placeholder={"PayPal\nTransferencia bancaria\nTarjeta de crédito o débito"} /><span className="mt-1.5 block text-[11px] text-[#978a85]">Escribe un método por línea. El pago se coordina por WhatsApp.</span><ErrorMessage error={state.errors?.paymentMethods} /></label>
+          <label><span className={labelClass}>Cómo realizar un pedido</span><textarea name="paymentInstructions" maxLength={1000} className={`${inputClass} min-h-24 py-3`} defaultValue={settings.paymentInstructions} placeholder="Escribinos por WhatsApp para confirmar disponibilidad, pago y entrega." /><ErrorMessage error={state.errors?.paymentInstructions} /></label>
         </div>
       </Panel>
 

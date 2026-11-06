@@ -6,10 +6,16 @@ import { requireUser } from "@/lib/auth/require-user";
 import { db } from "@/lib/db";
 
 const contentSchema = z.object({
-  sectionKey: z.enum(["hero", "artesanal", "historia", "contacto"]),
+  sectionKey: z.enum(["hero", "accesorios", "regalos", "personalizados", "corporativos", "historia", "tips", "pagos", "contacto"]),
   title: z.string().trim().max(200).optional(),
   subtitle: z.string().trim().max(300).optional(),
   body: z.string().trim().max(5000).optional(),
+  ctaLabel: z.string().trim().max(80).optional(),
+  ctaUrl: z.string().trim().max(500).optional(),
+  backgroundColor: z.union([
+    z.literal(""),
+    z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, "Usa un color HEX de 6 dígitos, por ejemplo #FFFFFF."),
+  ]),
   mediaId: z.preprocess(
     (value) => value == null || typeof value === "string" && value.trim() === "" ? null : value,
     z.string().trim().min(1).nullable(),
@@ -34,6 +40,9 @@ export async function saveContentSection(
     title: formData.get("title") || undefined,
     subtitle: formData.get("subtitle") || undefined,
     body: formData.get("body") || undefined,
+    ctaLabel: formData.get("ctaLabel") || undefined,
+    ctaUrl: formData.get("ctaUrl") || undefined,
+    backgroundColor: formData.get("backgroundColor") || "",
     mediaId: formData.get("mediaId"),
     visible: formData.get("visible") === "on",
     sortOrder: formData.get("sortOrder"),
@@ -54,6 +63,9 @@ export async function saveContentSection(
     title: values.title || null,
     subtitle: values.subtitle || null,
     body: values.body || null,
+    ctaLabel: values.ctaLabel || null,
+    ctaUrl: values.ctaUrl || null,
+    backgroundColor: values.backgroundColor || null,
   };
 
   await db.$transaction(async (tx) => {
